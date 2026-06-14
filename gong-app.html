@@ -112,6 +112,9 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
 .nav-i{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex:1}
 .nav-i.on .nav-ic svg{stroke:var(--gold)}
 .nav-i.on .nav-l{color:var(--gold)}
+#navMembership .nav-ic svg{stroke:var(--gold);fill:none}
+#navMembership .nav-l{color:var(--gold);font-weight:700}
+#navMembership.premium .nav-ic svg{fill:rgba(232,168,46,.15)}
 .nav-ic svg{width:24px;height:24px;stroke:var(--w50);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav-l{font-size:11px;color:var(--w50);font-weight:600}
 
@@ -453,7 +456,8 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
 .auth-forgot{font-size:12px;color:var(--gold);text-align:right;cursor:pointer;margin-top:-6px}
 
 /* PAYWALL SCREEN */
-.paywall-page{position:fixed;inset:0;z-index:850;display:none;justify-content:center;align-items:center;background:var(--navy);overflow-y:auto}
+.paywall-page{position:fixed;inset:0;z-index:850;display:none;justify-content:center;align-items:flex-start;background:rgba(0,0,0,.6);overflow-y:auto}
+.paywall-page::before{content:'';position:fixed;left:50%;top:0;transform:translateX(-50%);width:100%;max-width:430px;height:100%;background:var(--navy);z-index:-1}
 .paywall-page.show{display:flex}
 .paywall-frame{width:100%;max-width:430px;min-height:100vh;padding:50px 24px 40px;display:flex;flex-direction:column;align-items:center}
 .paywall-icon{font-size:48px;margin-bottom:16px}
@@ -500,6 +504,17 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
 .trial-welcome-feat{font-size:14px;color:var(--w90);font-weight:500}
 .trial-welcome-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy-dark);font-size:16px;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .2s}
 .trial-welcome-btn:active{transform:scale(.97)}
+
+/* BANA ÖZEL */
+.banaOzel-page{position:fixed;inset:0;z-index:700;display:none;justify-content:center;background:var(--navy);opacity:0;transition:opacity .3s;overflow:hidden}
+.banaOzel-page.show{display:flex;opacity:1}
+.banaOzel-inner{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.banaOzel-h{display:flex;align-items:center;padding:50px 20px 12px;gap:12px;flex-shrink:0}
+.banaOzel-back{width:38px;height:38px;border-radius:50%;background:var(--w10);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.banaOzel-title{font-size:22px;font-weight:700;color:var(--white)}
+.banaOzel-badge{display:flex;align-items:center;gap:8px;margin:0 20px 20px;padding:12px 16px;background:rgba(232,168,46,.1);border:1px solid rgba(232,168,46,.25);border-radius:12px;font-size:14px;font-weight:600;color:var(--gold);flex-shrink:0}
+.banaOzel-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.banaOzel-scroll::-webkit-scrollbar{display:none}
 
 /* PLAYER */
 .player-page{position:fixed;inset:0;z-index:800;display:none;justify-content:center;align-items:center;background:linear-gradient(170deg,#0a0e1a 0%,#1a2942 50%,#0a1428 100%);opacity:0;transition:opacity .3s}
@@ -566,7 +581,7 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
     <div class="paywall-desc">Sınırsız erişimle hayatını dönüştürmeye başla. Tüm sesli çalışmalar, programlar ve yeni içerikler seninle.</div>
     <div class="paywall-features">
       <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Tüm kategorilere sınırsız erişim</div>
-      <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Yeni içerikler her hafta eklenir</div>
+      <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Her hafta yeni içerikler</div>
       <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kişisel ilerleme takibi</div>
       <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Çevrimdışı dinleme</div>
     </div>
@@ -575,18 +590,18 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
         <div class="paywall-plan selected" id="planYearly" onclick="selectPlan('yearly')">
           <div class="paywall-plan-left">
             <div class="paywall-plan-name">Yıllık</div>
-            <div class="paywall-plan-detail">7 gün ücretsiz dene · sonra ₺599,99/yıl</div>
+            <div class="paywall-plan-detail">7 gün ücretsiz · <span style="text-decoration:line-through;opacity:.55">₺1.296</span> · ₺90/ay</div>
           </div>
-          <div class="paywall-plan-price">₺50<span style="font-size:12px;font-weight:400">/ay</span></div>
+          <div class="paywall-plan-price">₺1.080<span style="font-size:11px;font-weight:400">/yıl</span></div>
         </div>
         <div class="paywall-plan-badge">EN POPÜLER</div>
       </div>
       <div class="paywall-plan" id="planMonthly" onclick="selectPlan('monthly')">
         <div class="paywall-plan-left">
           <div class="paywall-plan-name">Aylık</div>
-          <div class="paywall-plan-detail">7 gün ücretsiz dene · sonra ₺79,99/ay</div>
+          <div class="paywall-plan-detail">7 gün ücretsiz dene · sonra ₺108/ay</div>
         </div>
-        <div class="paywall-plan-price">₺79,99<span style="font-size:12px;font-weight:400">/ay</span></div>
+        <div class="paywall-plan-price">₺108<span style="font-size:12px;font-weight:400">/ay</span></div>
       </div>
     </div>
     <button class="paywall-start" onclick="startTrial()">7 Gün Ücretsiz Başla</button>
@@ -618,6 +633,29 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
       <div class="trial-welcome-feat">✓ İstediğin zaman iptal et</div>
     </div>
     <button class="trial-welcome-btn" onclick="closeTrialWelcome()">Keşfetmeye Başla</button>
+  </div>
+</div>
+
+<!-- BANA ÖZEL PAGE -->
+<div class="banaOzel-page" id="banaOzelPage">
+  <div class="banaOzel-inner">
+    <div class="banaOzel-h">
+      <div class="banaOzel-back" onclick="closeBanaOzel()">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="banaOzel-title">Bana Özel</div>
+    </div>
+    <div class="banaOzel-badge">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(232,168,46,.9)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span>Gong Premium Üye</span>
+    </div>
+    <div class="banaOzel-scroll">
+      <div class="sec-h"><div class="sec-t">Sana Özel Öneriler</div></div>
+      <div class="reco-scroll" id="banaOzelRecs"></div>
+      <div class="sec-h" style="margin-top:8px"><div class="sec-t">Yeni Eklenenler</div></div>
+      <div class="new-scroll" id="banaOzelNew"></div>
+      <div style="height:40px"></div>
+    </div>
   </div>
 </div>
 
@@ -1061,7 +1099,7 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
       <div class="cat-scroll" id="cats"></div>
       <div class="dots" id="dots"></div>
 
-      <div class="sec-h" id="secFree" style="display:none"><div class="sec-t">Ücretsiz İçerikler</div><div class="sec-arrow" onclick="scrollSection('freeCards',200)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
+      <div class="sec-h" id="secFree" style="display:none"><div class="sec-t">Ücretsiz İçerik</div><div class="sec-arrow" onclick="scrollSection('freeCards',200)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
       <div class="new-scroll" id="freeCards"></div>
 
       <div class="sec-h" id="secNew"><div class="sec-t">Yeni Eklenenler</div><div class="sec-arrow" onclick="scrollSection('news',220)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
@@ -1083,7 +1121,12 @@ body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white
 
 <div class="nav">
   <div class="nav-i on" id="navHome" onclick="goHome()"><div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="nav-l">Ana Sayfa</div></div>
-  <div class="nav-i" id="navSOS" onclick="openSOS()"><div class="nav-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><text x="12" y="15.5" text-anchor="middle" font-family="Quicksand,sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none">SOS</text></svg></div><div class="nav-l">SOS</div></div>
+  <div class="nav-i" id="navMembership" onclick="openMembership()">
+    <div class="nav-ic" id="navMembershipIc">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <div class="nav-l" id="navMembershipLabel">Üye Ol</div>
+  </div>
   <div class="nav-i" id="navSearch" onclick="openSearch()"><div class="nav-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="nav-l">Arama</div></div>
   <div class="nav-i" id="navProfile"><div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="nav-l">Profil</div></div>
 </div>
@@ -1350,11 +1393,8 @@ const recs=[
   {t:"Uyku Öncesi Rahatlama",m:"30 dk",e:"🌙",bg:"bg1"}
 ];
 const freeI=[
-  {t:"Derin Nefes ile Rahatlama",m:"10 dk · Stres",e:"🌬️",bg:"bg2"},
-  {t:"Huzurlu Uyku Rehberi",m:"20 dk · Uyku",e:"🌙",bg:"bg1"},
-  {t:"Güne Pozitif Başla",m:"12 dk · Öz Saygı",e:"☀️",bg:"bg3"},
-  {t:"Kaygıdan Arınma",m:"15 dk · Stres",e:"🍃",bg:"bg2"},
-  {t:"Bolluk Frekansı",m:"18 dk · Bolluk",e:"✨",bg:"bg4"}
+  {t:"Uyuyamıyor musunuz?",m:"18 dk · Uyku",e:"🌙",bg:"bg1"},
+  {t:"Kaygı anında dinle",m:"12 dk · Stres",e:"🌬️",bg:"bg2"}
 ];
 const qz=[
   {q:"Bugün kendini nasıl hissediyorsun?",o:["Harika / Enerjik","İyi / Normal","Biraz yorgun","Stresli / Bunalmış","Çok kötü"]},
@@ -2949,10 +2989,17 @@ function renderRec(){
 function renderFree(){
   const sec = document.getElementById('secFree');
   const el = document.getElementById('freeCards');
-  // Premium kullanıcı → ücretsiz bölümünü gizle
   if(isUserPremium()) { sec.style.display='none'; el.innerHTML=''; return; }
   sec.style.display='flex';
-  el.innerHTML=freeI.map(i=>`<div class="new-card" onclick="onContentTap('${i.t}',true)"><div class="new-img ${i.bg}" style="position:relative">${i.e}<div class="free-badge">ÜCRETSİZ</div></div><div class="new-info"><div class="new-title">${i.t}</div><div class="new-meta">${i.m}</div></div></div>`).join('');
+  el.innerHTML=freeI.map(i=>`<div class="new-card" onclick="onContentTap('${i.t}',true)">
+    <div class="new-img ${i.bg}" style="position:relative">${i.e}
+      <div class="free-badge">ÜCRETSİZ</div>
+    </div>
+    <div class="new-info">
+      <div class="new-title">${i.t}</div>
+      <div class="new-meta">${i.m}</div>
+    </div>
+  </div>`).join('');
 }
 
 // Scroll ok tıklama: bölümü kaydır
@@ -3026,31 +3073,10 @@ function checkFirstLaunch() {
 // Anasayfadaki kartlar: "free" olarak işaretlenenler
 // Kategori sayfalarındaki kartlar: her zaman kilitli (premium değilse)
 function onContentTap(title, isFreeContent) {
-  // Premium kullanıcı → serbestçe aç
   if (isUserPremium()) { openPlayer(title); return; }
-
-  // Ücretsiz süre dolduysa → nudge
-  if (isFreeExpired()) {
-    showNudge('Ücretsiz deneme süren sona erdi. Kaldığın yerden devam etmek için sınırsız erişimi aç.');
-    return;
-  }
-
-  // Kategori sayfasındaki içerik → kilitli
-  if (!isFreeContent) {
-    showAuthPaywall();
-    return;
-  }
-
-  // Anasayfadaki ücretsiz içerik → sayacı kontrol et
-  let count = getFreePlayCount();
-  if (count >= FREE_PLAY_LIMIT) {
-    showNudge('Ücretsiz içerik hakkın doldu. Tüm içeriklere erişmek için sınırsız erişimi aç.');
-    return;
-  }
-  count++;
-  setLocalData('freePlayCount', count);
-  renderFree();
-  openPlayer(title);
+  if (isFreeContent) { openPlayer(title); return; }
+  // Premium olmayan + kategori içeriği → paywall
+  showPaywall();
 }
 
 // ===== PLAYER EKRANI =====
@@ -3066,6 +3092,52 @@ function closePlayer() {
   el.classList.remove('show');
   setTimeout(() => el.style.display = 'none', 300);
 }
+// ===== ÜYELİK NAV & BANA ÖZEL =====
+function openMembership() {
+  if (isUserPremium()) {
+    openBanaOzel();
+  } else {
+    showPaywall();
+  }
+}
+
+function openBanaOzel() {
+  const p = document.getElementById('banaOzelPage');
+  // Recs ve new içerik doldur
+  document.getElementById('banaOzelRecs').innerHTML = recs.map(r =>
+    `<div class="reco-card" onclick="onContentTap('${r.t}',false)">
+      <div class="reco-img ${r.bg}">${r.e}</div>
+      <div class="reco-info"><div class="reco-t">${r.t}</div><div class="reco-m">${r.m}</div></div>
+    </div>`).join('');
+  document.getElementById('banaOzelNew').innerHTML = newI.map(i =>
+    `<div class="new-card" onclick="onContentTap('${i.t}',false)">
+      <div class="new-img ${i.bg}">${i.e}<div class="new-badge">${i.b}</div></div>
+      <div class="new-info"><div class="new-title">${i.t}</div><div class="new-meta">${i.m}</div></div>
+    </div>`).join('');
+  p.style.display = 'flex';
+  requestAnimationFrame(() => p.classList.add('show'));
+  setNav('navMembership');
+}
+
+function closeBanaOzel() {
+  const p = document.getElementById('banaOzelPage');
+  p.classList.remove('show');
+  setTimeout(() => { p.style.display = 'none'; setNav('navHome'); }, 300);
+}
+
+function updateNavMembership() {
+  const label = document.getElementById('navMembershipLabel');
+  const nav = document.getElementById('navMembership');
+  if (!label || !nav) return;
+  if (isUserPremium()) {
+    label.textContent = 'Bana Özel';
+    nav.classList.add('premium');
+  } else {
+    label.textContent = 'Üye Ol';
+    nav.classList.remove('premium');
+  }
+}
+
 // TEST: Sol üst ayarlar butonu — localStorage sıfırla + yeniden yükle
 function resetApp() {
   ['seen','freeStart','freePlayCount','premium','user','trial'].forEach(k => localStorage.removeItem('gong_' + k));
@@ -3219,6 +3291,7 @@ function startTrial() {
   renderNew();
   renderRec();
   renderFree();
+  updateNavMembership();
 }
 
 function showTrialWelcome() {
@@ -3241,6 +3314,7 @@ function skipPaywall() {
   renderFree();
   renderNew();
   renderRec();
+  updateNavMembership();
 }
 
 // ===== SOFT NUDGE =====
@@ -3265,7 +3339,7 @@ window.addEventListener('load',()=>{
     checkAuth().catch(()=>{});
   });
   // Render hemen başlasın (hardcoded veri ile)
-  renderCats();renderNew();renderRec();renderFree();
+  renderCats();renderNew();renderRec();renderFree();updateNavMembership();
   setTimeout(()=>{checkScrollArrows();},100);
   // Paywall'u splash arkasında hazırla (ana sayfa görünmesin)
   checkFirstLaunch();
