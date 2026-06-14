@@ -1,0 +1,3281 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gong</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a2942;--navy-light:#243652;--navy-dark:#131f33;
+  --gold:#e8a82e;--white:#fff;
+  --w10:rgba(255,255,255,.1);--w15:rgba(255,255,255,.15);--w20:rgba(255,255,255,.2);
+  --w50:rgba(255,255,255,.5);--w70:rgba(255,255,255,.7);--w90:rgba(255,255,255,.9);
+  --card:rgba(255,255,255,.09);--card-b:rgba(255,255,255,.14);--r:14px;--rs:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Quicksand',sans-serif;background:var(--navy);color:var(--white);overflow:hidden;height:100vh;width:100vw}
+.phone{width:100%;max-width:430px;height:100vh;margin:0 auto;position:relative;overflow:hidden;background:var(--navy)}
+
+/* SPLASH */
+.splash{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:opacity 1s ease}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-logo{width:220px;margin-bottom:30px;animation:pulse 2s ease-in-out infinite}
+.splash-logo svg,.splash-logo img{width:100%;height:auto;display:block}
+.splash h2{font-size:28px;font-weight:700;color:var(--gold);opacity:0;animation:up .8s ease .3s forwards}
+.splash-bar{margin-top:40px;width:40px;height:4px;background:var(--w10);border-radius:2px;overflow:hidden;opacity:0;animation:up .5s ease .8s forwards}
+.splash-bar::after{content:'';display:block;width:60%;height:100%;background:var(--gold);border-radius:2px;animation:load 1.5s ease-in-out infinite}
+
+/* HOME */
+.home{height:100vh;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;padding:50px 20px 10px;flex-shrink:0}
+.top-btn{width:42px;height:42px;border-radius:50%;background:var(--w10);border:1px solid var(--w20);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.top-btn:active{transform:scale(.92);background:var(--w20)}
+.top-btn svg{width:20px;height:20px;stroke:var(--w90);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.badge{position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:#e8201a;border-radius:50%;border:2px solid var(--navy)}
+.top-logo{height:32px}
+.top-logo svg,.top-logo img{height:32px;width:auto;display:block}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:90px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+.scroll::-webkit-scrollbar{display:none}
+
+/* SOS */
+.sos-area{display:flex;flex-direction:column;align-items:center;padding:14px 0 8px}
+.sos-top-label{font-size:16px;font-weight:700;color:var(--w90);margin-bottom:14px;letter-spacing:1.5px;text-align:center}
+.sos-wrap{position:relative;width:160px;height:160px}
+.sos-wrap::before{content:'';position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(148,80,210,.2);animation:ring 2.5s ease-in-out infinite}
+.sos-wrap::after{content:'';position:absolute;inset:-26px;border-radius:50%;border:1.5px solid rgba(148,80,210,.1);animation:ring 2.5s ease-in-out .6s infinite}
+.sos-wrap{cursor:pointer;filter:drop-shadow(0 8px 20px rgba(120,60,190,.4))}
+.sos-wrap:active{transform:scale(.94)}
+
+/* SECTIONS */
+.sec-h{padding:20px 20px 10px;display:flex;align-items:center;justify-content:space-between}
+.sec-t{font-size:17px;font-weight:700;color:var(--white)}
+.sec-arrow{display:none;width:28px;height:28px;opacity:.4;flex-shrink:0;cursor:pointer;transition:opacity .2s}
+.sec-arrow:active{opacity:.7}
+.sec-arrow svg{width:100%;height:100%}
+.sec-h.scrollable .sec-arrow{display:block}
+
+/* CATEGORIES */
+.cat-scroll{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;padding:0 20px 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;overscroll-behavior-x:contain}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-page{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:10px;scroll-snap-align:start}
+.cat-card{width:110px;height:95px;background:var(--card);border:1px solid var(--card-b);border-radius:var(--rs);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .2s}
+.cat-card:active{transform:scale(.95);background:var(--w20)}
+.cat-icon{width:36px;height:36px}
+.cat-icon svg{width:100%;height:100%}
+.cat-name{font-size:11.5px;font-weight:600;color:var(--w90);text-align:center;line-height:1.25;padding:0 3px}
+
+.dots{display:flex;justify-content:center;gap:6px;padding:10px 0 2px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--w20);transition:all .3s}
+.dot.on{background:var(--gold);width:20px;border-radius:4px}
+
+/* NEW ITEMS */
+.new-scroll{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;padding:0 20px 6px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;overscroll-behavior-x:contain}
+.new-scroll::-webkit-scrollbar{display:none}
+.new-card{flex-shrink:0;width:200px;background:var(--card);border:1px solid var(--card-b);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .2s}
+.new-card:active{transform:scale(.97)}
+.new-img{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+.new-badge{position:absolute;top:8px;left:8px;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px}
+.new-info{padding:12px}
+.new-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
+.new-meta{font-size:12px;color:var(--w50);font-weight:500}
+
+/* MOOD */
+.mood{margin:10px 20px;background:linear-gradient(135deg,rgba(232,168,46,.15),rgba(232,168,46,.05));border:1px solid rgba(232,168,46,.25);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s}
+.mood:active{transform:scale(.98)}
+.mood-i{font-size:36px;flex-shrink:0}
+.mood-txt{flex:1}
+.mood-t{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.mood-s{font-size:13px;color:var(--w70);font-weight:500}
+.mood-a{font-size:22px;color:var(--gold);flex-shrink:0;font-weight:700}
+
+/* FREE BANNER */
+.free-banner{margin:6px 20px 10px;background:linear-gradient(135deg,rgba(232,168,46,.12),rgba(232,168,46,.04));border:1px solid rgba(232,168,46,.2);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;gap:10px}
+.free-banner-icon{font-size:20px;flex-shrink:0}
+.free-banner-txt{font-size:13px;color:var(--w70);font-weight:500;line-height:1.4}
+.free-banner-txt b{color:var(--gold);font-weight:700}
+.free-badge{position:absolute;top:8px;right:8px;background:rgba(76,175,80,.85);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.5px}
+
+/* RECO */
+.reco-scroll{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;padding:0 20px 6px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;overscroll-behavior-x:contain}
+.reco-scroll::-webkit-scrollbar{display:none}
+.reco-card{flex-shrink:0;width:155px;background:var(--card);border:1px solid var(--card-b);border-radius:var(--rs);overflow:hidden;cursor:pointer;transition:all .2s}
+.reco-card:active{transform:scale(.97)}
+.reco-img{width:100%;height:90px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.reco-info{padding:10px}
+.reco-t{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px}
+.reco-m{font-size:11px;color:var(--w50);font-weight:500}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--navy-dark);border-top:1px solid var(--w10);display:flex;align-items:center;justify-content:space-around;padding:10px 10px 28px;z-index:600}
+.nav-i{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex:1}
+.nav-i.on .nav-ic svg{stroke:var(--gold)}
+.nav-i.on .nav-l{color:var(--gold)}
+.nav-ic svg{width:24px;height:24px;stroke:var(--w50);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-l{font-size:11px;color:var(--w50);font-weight:600}
+
+/* QUIZ */
+.quiz{position:fixed;inset:0;background:var(--navy);z-index:500;display:none;flex-direction:column;opacity:0;transition:opacity .3s}
+.quiz.show{display:flex;opacity:1}
+.quiz-h{display:flex;align-items:center;padding:50px 20px 16px;gap:12px}
+.quiz-back{width:38px;height:38px;border-radius:50%;background:var(--w10);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.quiz-back svg{width:20px;height:20px;stroke:var(--white);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.quiz-ht{font-size:18px;font-weight:700}
+.quiz-p{height:4px;background:var(--w10);margin:0 20px;border-radius:2px}
+.quiz-pb{height:100%;background:var(--gold);border-radius:2px;transition:width .4s ease}
+.quiz-c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px}
+.quiz-q{font-size:22px;font-weight:700;text-align:center;margin-bottom:30px;line-height:1.4}
+.quiz-opts{width:100%;display:flex;flex-direction:column;gap:12px}
+.quiz-o{width:100%;padding:16px 20px;background:var(--w10);border:1.5px solid var(--w20);border-radius:12px;color:var(--white);font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.quiz-o:active,.quiz-o.sel{background:rgba(232,168,46,.2);border-color:var(--gold);color:var(--gold)}
+
+/* SOS PAGE - telefon genişliğinde */
+.sos-page{position:fixed;inset:0;background:var(--navy);z-index:500;display:none;flex-direction:column;align-items:center;opacity:0;transition:opacity .3s;overflow:hidden}
+.sos-page.show{display:flex;opacity:1}
+.sos-page-inner{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.sos-page-h{display:flex;align-items:center;padding:50px 20px 8px;gap:12px;flex-shrink:0}
+.sos-page-back{width:38px;height:38px;border-radius:50%;background:var(--w10);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.sos-page-back svg{width:20px;height:20px;stroke:var(--white);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sos-page-title{font-size:18px;font-weight:700;color:var(--white)}
+.sos-grid{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 20px 100px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;display:grid;grid-template-columns:repeat(2,1fr);gap:14px 16px;align-content:start}
+.sos-grid::-webkit-scrollbar{display:none}
+.sos-item{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .2s;padding:6px 0}
+.sos-item:active{transform:scale(.95)}
+.sos-btn-circle{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;position:relative;overflow:hidden;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
+.sos-btn-circle span{font-size:14px;font-weight:700;color:var(--white);line-height:1.3;text-shadow:0 2px 6px rgba(0,0,0,.6);z-index:1;position:relative;letter-spacing:.8px;text-transform:uppercase}
+.sos-item-desc{font-size:11.5px;color:var(--w70);line-height:1.4;font-weight:500;text-align:center;padding:0 2px}
+
+/* SEARCH PAGE - telefon genişliğinde */
+.search-page{position:fixed;inset:0;background:var(--navy);z-index:500;display:none;flex-direction:column;align-items:center;opacity:0;transition:opacity .3s;overflow:hidden}
+.search-page.show{display:flex;opacity:1}
+.search-page-inner{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.search-page-h{display:flex;align-items:center;padding:50px 20px 12px;gap:12px;flex-shrink:0}
+.search-page-back{width:38px;height:38px;border-radius:50%;background:var(--w10);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.search-page-back svg{width:20px;height:20px;stroke:var(--white);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.search-bar{flex:1;height:42px;background:var(--w10);border:1px solid var(--w20);border-radius:21px;display:flex;align-items:center;gap:10px;padding:0 16px}
+.search-bar svg{width:18px;height:18px;stroke:var(--w50);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.search-bar input{flex:1;background:none;border:none;outline:none;color:var(--white);font-family:inherit;font-size:14px;font-weight:500}
+.search-bar input::placeholder{color:var(--w50)}
+.search-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:100px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+.search-scroll::-webkit-scrollbar{display:none}
+.search-cats{display:flex;flex-wrap:wrap;gap:8px;padding:12px 20px}
+.search-cat{padding:8px 14px;background:var(--card);border:1px solid var(--card-b);border-radius:20px;font-size:12.5px;font-weight:600;color:var(--w90);cursor:pointer;transition:all .2s}
+.search-cat:active{background:var(--w20);transform:scale(.95)}
+.explore-scroll{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;padding:0 20px 8px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;overscroll-behavior-x:contain}
+.explore-scroll::-webkit-scrollbar{display:none}
+.explore-card{flex-shrink:0;width:180px;background:var(--card);border:1px solid var(--card-b);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .2s}
+.explore-card:active{transform:scale(.97)}
+.explore-vis{width:100%;height:110px;display:flex;align-items:flex-end;justify-content:flex-start;font-size:44px;padding:0 12px 10px;position:relative}
+.explore-label{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.8px;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.5);line-height:1.2}
+.explore-emoji{position:absolute;top:12px;right:12px;font-size:32px;opacity:.7}
+.explore-txt{padding:10px 12px;font-size:12.5px;color:var(--w70);line-height:1.45;font-weight:500}
+
+/* UYKU (KATEGORİ) SAYFASI */
+.uyku-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#0a0e1a}
+.uyku-page.show{display:flex;opacity:1}
+.uyku-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.uyku-bg{position:absolute;inset:0;background:linear-gradient(180deg,#0a0e1a 0%,#0f1528 30%,#141e3c 60%,#1a2848 100%);overflow:hidden}
+.uyku-stars{position:absolute;inset:0}
+.uyku-star{position:absolute;border-radius:50%;background:white}
+.uyku-star.twinkle{animation:twinkle 3s ease-in-out infinite}
+.uyku-star.twinkle2{animation:twinkle 4s ease-in-out 1s infinite}
+.uyku-star.twinkle3{animation:twinkle 5s ease-in-out 2s infinite}
+.shooting-star{position:absolute;width:80px;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.8),transparent);transform:rotate(145deg);opacity:0;animation:shoot 6s ease-in 3s infinite}
+.shooting-star:nth-child(2){animation-delay:9s;top:20%;left:60%;width:60px}
+
+.uyku-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+.uyku-h{display:flex;align-items:center;padding:50px 20px 12px;gap:12px;flex-shrink:0}
+.uyku-back{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.uyku-back svg{width:20px;height:20px;stroke:var(--white);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.uyku-title{font-size:24px;font-weight:700;color:var(--white)}
+
+.uyku-tabs{display:flex;gap:8px;padding:8px 20px 14px;flex-shrink:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.uyku-tabs::-webkit-scrollbar{display:none}
+.uyku-tab{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;color:var(--w70);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.uyku-tab.on{background:rgba(255,255,255,.15);color:var(--white);border-color:rgba(255,255,255,.25)}
+.uyku-tab:active{transform:scale(.95)}
+
+.uyku-intro{padding:0 24px 16px;text-align:center;font-size:13.5px;color:var(--w50);line-height:1.6;font-weight:500}
+.uyku-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:100px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+.uyku-scroll::-webkit-scrollbar{display:none}
+
+.uyku-sec-title{font-size:18px;font-weight:700;color:var(--white);padding:16px 20px 12px}
+.uyku-sec-right{float:right;font-size:13px;font-weight:600;color:var(--w50);cursor:pointer}
+
+.uyku-cards{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;padding:0 20px 16px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;overscroll-behavior-x:contain}
+.uyku-cards::-webkit-scrollbar{display:none}
+.uyku-card{flex-shrink:0;width:220px;border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
+.uyku-card:active{transform:scale(.97)}
+.uyku-card-vis{width:100%;height:200px;position:relative;overflow:hidden}
+.uyku-card-scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.uyku-card-bottom{position:absolute;bottom:0;left:0;right:0;padding:12px 14px;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+.uyku-card-dur{font-size:11px;color:var(--w70);font-weight:500;margin-bottom:3px}
+.uyku-card-dur svg{width:12px;height:12px;vertical-align:-2px;margin-right:3px;stroke:var(--w70);fill:none;stroke-width:2}
+.uyku-card-name{font-size:16px;font-weight:700;color:var(--white);margin-bottom:2px;line-height:1.3}
+.uyku-card-author{font-size:12.5px;font-weight:500;color:var(--w50)}
+
+/* STRES/ANKSİYETE KATEGORİ SAYFASI */
+.stres-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#1a0a1e}
+.stres-page.show{display:flex;opacity:1}
+.stres-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.stres-bg{position:absolute;inset:0;background:linear-gradient(180deg,#1a0a1e 0%,#1e1028 25%,#1a1830 50%,#162040 75%,#1a2848 100%);overflow:hidden}
+.stres-orbs{position:absolute;inset:0;pointer-events:none}
+.stres-orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.12}
+.stres-orb.o1{width:200px;height:200px;background:#7c4dff;top:-40px;right:-60px;animation:orbFloat 8s ease-in-out infinite}
+.stres-orb.o2{width:160px;height:160px;background:#e040fb;bottom:20%;left:-40px;animation:orbFloat 10s ease-in-out 2s infinite}
+.stres-orb.o3{width:120px;height:120px;background:#448aff;top:40%;right:-20px;animation:orbFloat 12s ease-in-out 4s infinite}
+.stres-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,15px) scale(1.1)}}
+
+/* İLİŞKİLER KATEGORİ SAYFASI */
+.iliski-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#1a0c14}
+.iliski-page.show{display:flex;opacity:1}
+.iliski-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.iliski-bg{position:absolute;inset:0;background:linear-gradient(160deg,#1a0c14 0%,#261020 20%,#2a1428 40%,#1e1830 65%,#18142a 100%);overflow:hidden}
+.iliski-waves{position:absolute;inset:0;pointer-events:none}
+.iliski-wave{position:absolute;border-radius:50%;opacity:.07}
+.iliski-wave.w1{width:300px;height:300px;background:radial-gradient(circle,#e040a0,transparent 70%);top:-80px;left:-60px;animation:waveFloat 10s ease-in-out infinite}
+.iliski-wave.w2{width:250px;height:250px;background:radial-gradient(circle,#c06090,transparent 70%);bottom:10%;right:-80px;animation:waveFloat 13s ease-in-out 3s infinite}
+.iliski-wave.w3{width:180px;height:180px;background:radial-gradient(circle,#a060c0,transparent 70%);top:35%;left:50%;animation:waveFloat 11s ease-in-out 6s infinite}
+.iliski-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+
+@keyframes waveFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(15px,-10px) scale(1.05)}50%{transform:translate(-10px,20px) scale(1.1)}75%{transform:translate(20px,10px) scale(.95)}}
+
+/* BOLLUK BEREKET KATEGORİ SAYFASI */
+.bolluk-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#3a3010}
+.bolluk-page.show{display:flex;opacity:1}
+.bolluk-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.bolluk-bg{position:absolute;inset:0;background:linear-gradient(170deg,#3a3010 0%,#4a4018 20%,#5a4e20 40%,#6a5c28 55%,#5a4e20 70%,#4a4018 85%,#3a3010 100%);overflow:hidden}
+.bolluk-glow{position:absolute;inset:0;pointer-events:none}
+.bolluk-g{position:absolute;border-radius:50%;opacity:.18}
+.bolluk-g.g1{width:280px;height:280px;background:radial-gradient(circle,#e6d74b,transparent 70%);top:-60px;right:-80px;animation:glowDrift 12s ease-in-out infinite}
+.bolluk-g.g2{width:200px;height:200px;background:radial-gradient(circle,#d4c440,transparent 70%);bottom:15%;left:-50px;animation:glowDrift 15s ease-in-out 4s infinite}
+.bolluk-g.g3{width:150px;height:150px;background:radial-gradient(circle,#e6d74b,transparent 70%);top:50%;right:10%;animation:glowDrift 10s ease-in-out 7s infinite}
+.bolluk-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+
+@keyframes glowDrift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-15px,20px) scale(1.08)}66%{transform:translate(10px,-15px) scale(.95)}}
+
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes shoot{0%{opacity:0;transform:rotate(145deg) translateX(0)}5%{opacity:1}15%{opacity:0;transform:rotate(145deg) translateX(200px)}100%{opacity:0}}
+
+/* BAĞIMLILIKLAR KATEGORİ SAYFASI */
+.bagim-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#1a1210}
+.bagim-page.show{display:flex;opacity:1}
+.bagim-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.bagim-bg{position:absolute;inset:0;background:linear-gradient(170deg,#1a1210 0%,#241a14 20%,#2e2018 40%,#38281c 55%,#2e2018 70%,#241a14 85%,#1a1210 100%);overflow:hidden}
+.bagim-glow{position:absolute;inset:0;pointer-events:none}
+.bagim-gl{position:absolute;border-radius:50%;opacity:.12}
+.bagim-gl.b1{width:260px;height:260px;background:radial-gradient(circle,#d08050,transparent 70%);top:-50px;right:-60px;animation:bagimDrift 11s ease-in-out infinite}
+.bagim-gl.b2{width:180px;height:180px;background:radial-gradient(circle,#c07040,transparent 70%);bottom:18%;left:-40px;animation:bagimDrift 14s ease-in-out 4s infinite}
+.bagim-gl.b3{width:140px;height:140px;background:radial-gradient(circle,#e09060,transparent 70%);top:42%;right:5%;animation:bagimDrift 10s ease-in-out 7s infinite}
+.bagim-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+
+@keyframes bagimDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-18px,14px) scale(1.06)}70%{transform:translate(12px,-10px) scale(.96)}}
+
+/* KİLO VERME KATEGORİ SAYFASI */
+.kilo-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#0e1e14}
+.kilo-page.show{display:flex;opacity:1}
+.kilo-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.kilo-bg{position:absolute;inset:0;background:linear-gradient(170deg,#0e1e14 0%,#142a1c 20%,#1a3424 40%,#1e3e2c 55%,#1a3424 70%,#142a1c 85%,#0e1e14 100%);overflow:hidden}
+.kilo-glow{position:absolute;inset:0;pointer-events:none}
+.kilo-gl{position:absolute;border-radius:50%;opacity:.1}
+.kilo-gl.k1{width:260px;height:260px;background:radial-gradient(circle,#6cc070,transparent 70%);top:-50px;right:-60px;animation:kiloDrift 12s ease-in-out infinite}
+.kilo-gl.k2{width:200px;height:200px;background:radial-gradient(circle,#80d888,transparent 70%);bottom:20%;left:-40px;animation:kiloDrift 15s ease-in-out 4s infinite}
+.kilo-gl.k3{width:140px;height:140px;background:radial-gradient(circle,#90e898,transparent 70%);top:40%;right:10%;animation:kiloDrift 10s ease-in-out 7s infinite}
+.kilo-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes kiloDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-14px,16px) scale(1.05)}70%{transform:translate(10px,-12px) scale(.95)}}
+
+/* NAZAR / KÖTÜ ENERJİ KATEGORİ SAYFASI */
+.nazar-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#0a1428}
+.nazar-page.show{display:flex;opacity:1}
+.nazar-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.nazar-bg{position:absolute;inset:0;background:linear-gradient(170deg,#0a1428 0%,#0e1c38 20%,#122448 40%,#162c50 55%,#122448 70%,#0e1c38 85%,#0a1428 100%);overflow:hidden}
+.nazar-glow{position:absolute;inset:0;pointer-events:none}
+.nazar-gl{position:absolute;border-radius:50%;opacity:.1}
+.nazar-gl.n1{width:280px;height:280px;background:radial-gradient(circle,#3498db,transparent 70%);top:-60px;left:-70px;animation:nazarDrift 13s ease-in-out infinite}
+.nazar-gl.n2{width:200px;height:200px;background:radial-gradient(circle,#5dade2,transparent 70%);bottom:15%;right:-50px;animation:nazarDrift 16s ease-in-out 5s infinite}
+.nazar-gl.n3{width:150px;height:150px;background:radial-gradient(circle,#2e86c1,transparent 70%);top:45%;left:35%;animation:nazarDrift 11s ease-in-out 8s infinite}
+.nazar-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes nazarDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(16px,-14px) scale(1.06)}70%{transform:translate(-12px,10px) scale(.95)}}
+.nazar-grid{display:flex;flex-direction:column;gap:14px;padding:0 18px 30px}
+.nazar-card-item{background:rgba(52,152,219,.08);border:1px solid rgba(52,152,219,.15);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.nazar-card-item:active{transform:scale(.97);background:rgba(52,152,219,.14)}
+.nazar-card-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(52,152,219,.15),rgba(93,173,226,.1));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nazar-card-icon svg{width:26px;height:26px}
+.nazar-card-info{flex:1;min-width:0}
+.nazar-card-title{font-size:14px;font-weight:600;color:rgba(255,255,255,.9);margin-bottom:3px}
+.nazar-card-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.4}
+.nazar-card-dur{font-size:11px;color:rgba(93,173,226,.7);font-weight:600;white-space:nowrap;flex-shrink:0}
+
+/* OLUMSUZ DUYGULAR KATEGORİ SAYFASI */
+.olumsuz-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#1a0a0e}
+.olumsuz-page.show{display:flex;opacity:1}
+.olumsuz-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.olumsuz-bg{position:absolute;inset:0;background:linear-gradient(170deg,#1a0a0e 0%,#241018 20%,#2e1620 40%,#381c28 55%,#2e1620 70%,#241018 85%,#1a0a0e 100%);overflow:hidden}
+.olumsuz-glow{position:absolute;inset:0;pointer-events:none}
+.olumsuz-gl{position:absolute;border-radius:50%;opacity:.1}
+.olumsuz-gl.o1{width:260px;height:260px;background:radial-gradient(circle,#c06080,transparent 70%);top:-50px;left:-60px;animation:olumsuzDrift 12s ease-in-out infinite}
+.olumsuz-gl.o2{width:200px;height:200px;background:radial-gradient(circle,#a04060,transparent 70%);bottom:18%;right:-50px;animation:olumsuzDrift 15s ease-in-out 4s infinite}
+.olumsuz-gl.o3{width:140px;height:140px;background:radial-gradient(circle,#d07090,transparent 70%);top:42%;left:40%;animation:olumsuzDrift 10s ease-in-out 7s infinite}
+.olumsuz-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes olumsuzDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-16px,12px) scale(1.05)}70%{transform:translate(14px,-10px) scale(.96)}}
+
+/* ÖĞRENCİLER İÇİN KATEGORİ SAYFASI */
+.ogrenci-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#10102a}
+.ogrenci-page.show{display:flex;opacity:1}
+.ogrenci-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.ogrenci-bg{position:absolute;inset:0;background:linear-gradient(170deg,#10102a 0%,#161838 20%,#1c2046 40%,#222850 55%,#1c2046 70%,#161838 85%,#10102a 100%);overflow:hidden}
+.ogrenci-glow{position:absolute;inset:0;pointer-events:none}
+.ogrenci-gl{position:absolute;border-radius:50%;opacity:.1}
+.ogrenci-gl.g1{width:260px;height:260px;background:radial-gradient(circle,#6070d0,transparent 70%);top:-50px;right:-60px;animation:ogrenciDrift 11s ease-in-out infinite}
+.ogrenci-gl.g2{width:200px;height:200px;background:radial-gradient(circle,#8090e0,transparent 70%);bottom:20%;left:-40px;animation:ogrenciDrift 14s ease-in-out 3s infinite}
+.ogrenci-gl.g3{width:140px;height:140px;background:radial-gradient(circle,#7080c8,transparent 70%);top:45%;right:15%;animation:ogrenciDrift 10s ease-in-out 6s infinite}
+.ogrenci-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes ogrenciDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(12px,-16px) scale(1.06)}70%{transform:translate(-14px,10px) scale(.95)}}
+
+/* ÖZ SAYGI / ÖZ SEVGİ KATEGORİ SAYFASI */
+.ozsaygi-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#1a100e}
+.ozsaygi-page.show{display:flex;opacity:1}
+.ozsaygi-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.ozsaygi-bg{position:absolute;inset:0;background:linear-gradient(170deg,#1a100e 0%,#241614 20%,#2e1c1a 40%,#382220 55%,#2e1c1a 70%,#241614 85%,#1a100e 100%);overflow:hidden}
+.ozsaygi-glow{position:absolute;inset:0;pointer-events:none}
+.ozsaygi-gl{position:absolute;border-radius:50%;opacity:.12}
+.ozsaygi-gl.s1{width:260px;height:260px;background:radial-gradient(circle,#d08870,transparent 70%);top:-50px;right:-60px;animation:ozsaygiDrift 11s ease-in-out infinite}
+.ozsaygi-gl.s2{width:200px;height:200px;background:radial-gradient(circle,#c07060,transparent 70%);bottom:18%;left:-40px;animation:ozsaygiDrift 14s ease-in-out 4s infinite}
+.ozsaygi-gl.s3{width:140px;height:140px;background:radial-gradient(circle,#e0a090,transparent 70%);top:42%;right:5%;animation:ozsaygiDrift 10s ease-in-out 7s infinite}
+.ozsaygi-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes ozsaygiDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-16px,14px) scale(1.06)}70%{transform:translate(12px,-12px) scale(.95)}}
+
+/* SAĞLIK KATEGORİ SAYFASI */
+.saglik-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#0a1a18}
+.saglik-page.show{display:flex;opacity:1}
+.saglik-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.saglik-bg{position:absolute;inset:0;background:linear-gradient(170deg,#0a1a18 0%,#102420 20%,#162e28 40%,#1c3830 55%,#162e28 70%,#102420 85%,#0a1a18 100%);overflow:hidden}
+.saglik-glow{position:absolute;inset:0;pointer-events:none}
+.saglik-gl{position:absolute;border-radius:50%;opacity:.1}
+.saglik-gl.h1{width:260px;height:260px;background:radial-gradient(circle,#40b0a0,transparent 70%);top:-50px;left:-60px;animation:saglikDrift 12s ease-in-out infinite}
+.saglik-gl.h2{width:200px;height:200px;background:radial-gradient(circle,#50c0b0,transparent 70%);bottom:20%;right:-50px;animation:saglikDrift 15s ease-in-out 4s infinite}
+.saglik-gl.h3{width:140px;height:140px;background:radial-gradient(circle,#60d0c0,transparent 70%);top:40%;left:35%;animation:saglikDrift 10s ease-in-out 7s infinite}
+.saglik-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes saglikDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(14px,-16px) scale(1.05)}70%{transform:translate(-12px,10px) scale(.96)}}
+
+/* YAS KATEGORİ SAYFASI */
+.yas-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#10141a}
+.yas-page.show{display:flex;opacity:1}
+.yas-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.yas-bg{position:absolute;inset:0;background:linear-gradient(170deg,#10141a 0%,#161c24 20%,#1c242e 40%,#222c38 55%,#1c242e 70%,#161c24 85%,#10141a 100%);overflow:hidden}
+.yas-glow{position:absolute;inset:0;pointer-events:none}
+.yas-gl{position:absolute;border-radius:50%;opacity:.1}
+.yas-gl.y1{width:280px;height:280px;background:radial-gradient(circle,#7090a8,transparent 70%);top:-60px;left:-70px;animation:yasDrift 13s ease-in-out infinite}
+.yas-gl.y2{width:200px;height:200px;background:radial-gradient(circle,#80a0b8,transparent 70%);bottom:15%;right:-50px;animation:yasDrift 16s ease-in-out 5s infinite}
+.yas-gl.y3{width:150px;height:150px;background:radial-gradient(circle,#6080a0,transparent 70%);top:45%;left:35%;animation:yasDrift 11s ease-in-out 8s infinite}
+.yas-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes yasDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(16px,-14px) scale(1.06)}70%{transform:translate(-12px,10px) scale(.95)}}
+.yas-grid{display:flex;flex-direction:column;gap:14px;padding:0 18px 30px}
+.yas-card-item{background:rgba(112,144,168,.08);border:1px solid rgba(112,144,168,.15);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.yas-card-item:active{transform:scale(.97);background:rgba(112,144,168,.14)}
+.yas-card-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(112,144,168,.15),rgba(128,160,184,.1));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.yas-card-icon svg{width:26px;height:26px}
+.yas-card-info{flex:1;min-width:0}
+.yas-card-title{font-size:14px;font-weight:600;color:rgba(255,255,255,.9);margin-bottom:3px}
+.yas-card-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.4}
+.yas-card-dur{font-size:11px;color:rgba(128,160,184,.7);font-weight:600;white-space:nowrap;flex-shrink:0}
+
+/* EVCİL HAYVANLAR KATEGORİ SAYFASI */
+.evcil-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#1a1610}
+.evcil-page.show{display:flex;opacity:1}
+.evcil-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.evcil-bg{position:absolute;inset:0;background:linear-gradient(170deg,#1a1610 0%,#241e16 20%,#2e261c 40%,#382e22 55%,#2e261c 70%,#241e16 85%,#1a1610 100%);overflow:hidden}
+.evcil-glow{position:absolute;inset:0;pointer-events:none}
+.evcil-gl{position:absolute;border-radius:50%;opacity:.12}
+.evcil-gl.v1{width:260px;height:260px;background:radial-gradient(circle,#c8a050,transparent 70%);top:-50px;right:-60px;animation:evcilDrift 11s ease-in-out infinite}
+.evcil-gl.v2{width:200px;height:200px;background:radial-gradient(circle,#b89040,transparent 70%);bottom:18%;left:-40px;animation:evcilDrift 14s ease-in-out 4s infinite}
+.evcil-gl.v3{width:140px;height:140px;background:radial-gradient(circle,#d8b060,transparent 70%);top:42%;right:5%;animation:evcilDrift 10s ease-in-out 7s infinite}
+.evcil-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+@keyframes evcilDrift{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-14px,16px) scale(1.05)}70%{transform:translate(10px,-12px) scale(.96)}}
+
+/* EBEVEYNLİK KATEGORİ SAYFASI */
+.ebeveyn-page{position:fixed;inset:0;z-index:500;display:none;justify-content:center;opacity:0;transition:opacity .3s;overflow:hidden;background:#12202a}
+.ebeveyn-page.show{display:flex;opacity:1}
+.ebeveyn-frame{width:100%;max-width:430px;height:100%;position:relative;overflow:hidden}
+.ebeveyn-bg{position:absolute;inset:0;background:linear-gradient(170deg,#12202a 0%,#182838 20%,#1e3040 40%,#1a3848 55%,#1e3444 70%,#162a38 85%,#122430 100%);overflow:hidden}
+.ebeveyn-glow{position:absolute;inset:0;pointer-events:none}
+.ebeveyn-gl{position:absolute;border-radius:50%;opacity:.1}
+.ebeveyn-gl.e1{width:260px;height:260px;background:radial-gradient(circle,#50b8d0,transparent 70%);top:-50px;left:-60px;animation:eFloat 11s ease-in-out infinite}
+.ebeveyn-gl.e2{width:200px;height:200px;background:radial-gradient(circle,#70c8a0,transparent 70%);bottom:20%;right:-50px;animation:eFloat 14s ease-in-out 3s infinite}
+.ebeveyn-gl.e3{width:140px;height:140px;background:radial-gradient(circle,#60a0d0,transparent 70%);top:45%;left:40%;animation:eFloat 9s ease-in-out 6s infinite}
+.ebeveyn-inner{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+
+@keyframes eFloat{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(12px,-18px) scale(1.06)}70%{transform:translate(-16px,12px) scale(.96)}}
+
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03);filter:drop-shadow(0 0 20px rgba(232,168,46,.3))}}
+@keyframes ring{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.12);opacity:1}}
+@keyframes load{0%{transform:translateX(-100%)}50%{transform:translateX(80%)}100%{transform:translateX(-100%)}}
+
+.bg1{background:linear-gradient(135deg,#1a237e,#283593)}
+.bg2{background:linear-gradient(135deg,#4a148c,#6a1b9a)}
+.bg3{background:linear-gradient(135deg,#1b5e20,#2e7d32)}
+.bg4{background:linear-gradient(135deg,#880e4f,#ad1457)}
+.bg5{background:linear-gradient(135deg,#e65100,#ef6c00)}
+.bg6{background:linear-gradient(135deg,#1a237e,#0d47a1)}
+.bg7{background:linear-gradient(135deg,#b71c1c,#c62828)}
+.bg8{background:linear-gradient(135deg,#004d40,#00695c)}
+.bg9{background:linear-gradient(135deg,#bf360c,#e64a19)}
+.bg10{background:linear-gradient(135deg,#311b92,#4527a0)}
+.bg11{background:linear-gradient(135deg,#0d47a1,#1565c0)}
+
+/* AUTH SCREEN */
+.auth-page{position:fixed;inset:0;z-index:900;display:none;justify-content:center;align-items:center;background:var(--navy);overflow-y:auto}
+.auth-page.show{display:flex}
+.auth-frame{width:100%;max-width:430px;min-height:100vh;padding:60px 28px 40px;display:flex;flex-direction:column;align-items:center;position:relative}
+.auth-logo{width:140px;margin-bottom:10px}
+.auth-logo svg{width:100%;height:auto}
+.auth-subtitle{font-size:14px;color:var(--w50);text-align:center;margin-bottom:36px;line-height:1.5}
+.auth-form{width:100%;display:flex;flex-direction:column;gap:14px}
+.auth-input{width:100%;padding:14px 16px;background:var(--w10);border:1px solid var(--w20);border-radius:12px;color:var(--white);font-family:'Quicksand',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.auth-input:focus{border-color:var(--gold)}
+.auth-input::placeholder{color:var(--w50)}
+.auth-btn{width:100%;padding:15px;background:var(--gold);border:none;border-radius:12px;color:var(--navy-dark);font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:transform .1s,opacity .1s}
+.auth-btn:active{transform:scale(.97);opacity:.9}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-divider{display:flex;align-items:center;gap:12px;width:100%;margin:8px 0}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--w15)}
+.auth-divider span{font-size:12px;color:var(--w50)}
+.auth-social{width:100%;padding:13px;background:var(--w10);border:1px solid var(--w20);border-radius:12px;color:var(--white);font-family:'Quicksand',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s}
+.auth-social:active{background:var(--w20)}
+.auth-social svg{width:20px;height:20px}
+.auth-switch{margin-top:20px;font-size:13px;color:var(--w50);text-align:center}
+.auth-switch a{color:var(--gold);cursor:pointer;text-decoration:none;font-weight:600}
+.auth-error{width:100%;padding:10px 14px;background:rgba(232,50,40,.15);border:1px solid rgba(232,50,40,.3);border-radius:10px;color:#ff6b6b;font-size:13px;text-align:center;display:none}
+.auth-forgot{font-size:12px;color:var(--gold);text-align:right;cursor:pointer;margin-top:-6px}
+
+/* PAYWALL SCREEN */
+.paywall-page{position:fixed;inset:0;z-index:850;display:none;justify-content:center;align-items:center;background:var(--navy);overflow-y:auto}
+.paywall-page.show{display:flex}
+.paywall-frame{width:100%;max-width:430px;min-height:100vh;padding:50px 24px 40px;display:flex;flex-direction:column;align-items:center}
+.paywall-icon{font-size:48px;margin-bottom:16px}
+.paywall-title{font-size:24px;font-weight:700;color:var(--white);text-align:center;margin-bottom:8px}
+.paywall-desc{font-size:14px;color:var(--w70);text-align:center;line-height:1.6;margin-bottom:28px;max-width:340px}
+.paywall-features{width:100%;margin-bottom:28px;display:flex;flex-direction:column;gap:12px}
+.paywall-feat{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--w90)}
+.paywall-feat svg{width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:2;flex-shrink:0}
+.paywall-plans{width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.paywall-plan{width:100%;padding:16px;background:var(--w10);border:2px solid var(--w20);border-radius:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s,background .2s}
+.paywall-plan.selected{border-color:var(--gold);background:rgba(232,168,46,.08)}
+.paywall-plan-left{display:flex;flex-direction:column;gap:2px}
+.paywall-plan-name{font-size:15px;font-weight:700;color:var(--white)}
+.paywall-plan-detail{font-size:12px;color:var(--w50)}
+.paywall-plan-price{font-size:18px;font-weight:700;color:var(--gold)}
+.paywall-plan-badge{position:absolute;top:-10px;right:14px;background:var(--gold);color:var(--navy-dark);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px}
+.paywall-plan-wrap{position:relative}
+.paywall-start{width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:var(--navy-dark);font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:12px;transition:transform .1s}
+.paywall-start:active{transform:scale(.97)}
+.paywall-skip{font-size:14px;color:var(--w50);cursor:pointer;text-align:center;padding:10px;text-decoration:underline;text-underline-offset:3px}
+.paywall-skip:active{color:var(--w70)}
+.paywall-legal{font-size:10px;color:var(--w30);text-align:center;margin-top:16px;line-height:1.5}
+
+/* SOFT NUDGE MODAL */
+.nudge-overlay{position:fixed;inset:0;z-index:950;display:none;justify-content:center;align-items:flex-end;background:rgba(0,0,0,.6);padding:20px}
+.nudge-overlay.show{display:flex}
+.nudge-box{width:100%;max-width:400px;background:var(--navy-light);border:1px solid var(--w20);border-radius:20px;padding:28px 22px;text-align:center;animation:nudgeUp .4s ease}
+@keyframes nudgeUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.nudge-emoji{font-size:40px;margin-bottom:12px}
+.nudge-title{font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px}
+.nudge-text{font-size:13px;color:var(--w70);line-height:1.6;margin-bottom:22px}
+.nudge-btn{width:100%;padding:14px;background:var(--gold);border:none;border-radius:12px;color:var(--navy-dark);font-family:'Quicksand',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px}
+.nudge-btn:active{transform:scale(.97)}
+.nudge-close{font-size:13px;color:var(--w50);cursor:pointer;padding:8px}
+
+/* TRIAL WELCOME */
+.trial-welcome{position:fixed;inset:0;z-index:870;display:none;justify-content:center;align-items:center;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);opacity:0;transition:opacity .3s}
+.trial-welcome.show{opacity:1}
+.trial-welcome-inner{width:90%;max-width:340px;background:linear-gradient(170deg,#1a2740,#1a2942);border:1px solid rgba(232,168,46,.25);border-radius:20px;padding:40px 28px;text-align:center}
+.trial-welcome-icon{font-size:52px;margin-bottom:16px}
+.trial-welcome-title{font-size:24px;font-weight:700;color:var(--gold);margin-bottom:10px}
+.trial-welcome-desc{font-size:14px;color:var(--w70);line-height:1.5;margin-bottom:24px}
+.trial-welcome-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.trial-welcome-feat{font-size:14px;color:var(--w90);font-weight:500}
+.trial-welcome-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy-dark);font-size:16px;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .2s}
+.trial-welcome-btn:active{transform:scale(.97)}
+
+/* PLAYER */
+.player-page{position:fixed;inset:0;z-index:800;display:none;justify-content:center;align-items:center;background:linear-gradient(170deg,#0a0e1a 0%,#1a2942 50%,#0a1428 100%);opacity:0;transition:opacity .3s}
+.player-page.show{opacity:1}
+.player-inner{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px;position:relative}
+.player-close{position:absolute;top:50px;right:20px;cursor:pointer;padding:8px}
+.player-close:active{opacity:.5}
+.player-art{position:relative;width:200px;height:200px;margin-bottom:36px;display:flex;align-items:center;justify-content:center}
+.player-glow{position:absolute;inset:-40px;border-radius:50%;background:radial-gradient(circle,rgba(232,168,46,.15) 0%,transparent 70%);animation:pulse 3s ease-in-out infinite}
+.player-circle{width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid rgba(232,168,46,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s}
+.player-circle:active{transform:scale(.95)}
+.player-title{font-size:22px;font-weight:700;color:var(--white);text-align:center;margin-bottom:6px}
+.player-author{font-size:14px;color:var(--w50);font-weight:500;margin-bottom:30px}
+.player-bar{width:100%;height:4px;background:var(--w10);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.player-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s}
+.player-times{width:100%;display:flex;justify-content:space-between;font-size:12px;color:var(--w50);margin-bottom:30px}
+.player-controls{display:flex;align-items:center;gap:36px;margin-bottom:20px}
+.player-ctrl-btn{width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.6;transition:opacity .2s}
+.player-ctrl-btn:active{opacity:1}
+.player-play-btn{width:64px;height:64px;border-radius:50%;background:rgba(232,168,46,.15);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s}
+.player-play-btn:active{transform:scale(.92)}
+.player-hint{font-size:12px;color:var(--w50);font-weight:500}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="splash-logo" id="sLogo"></div>
+  <h2>Hoşgeldin</h2>
+  <div class="splash-bar"></div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div class="auth-page" id="authPage">
+  <div class="auth-frame">
+    <div class="auth-close" onclick="hideAuth()" style="position:absolute;top:16px;right:16px;cursor:pointer;padding:8px;z-index:5"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+    <div class="auth-logo" id="authLogo"></div>
+    <div class="auth-subtitle" id="authSubtitle">Huzurlu bir yaşam için<br>hesabını oluştur</div>
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-form" id="authForm">
+      <input class="auth-input" id="authName" type="text" placeholder="Ad Soyad">
+      <input class="auth-input" id="authEmail" type="email" placeholder="E-posta adresi">
+      <input class="auth-input" id="authPass" type="password" placeholder="Şifre (en az 6 karakter)">
+      <button class="auth-btn" id="authBtn" onclick="handleAuth()">Kayıt Ol</button>
+    </div>
+    <div class="auth-divider"><span>veya</span></div>
+    <button class="auth-social" onclick="handleGoogleAuth()">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Google ile devam et
+    </button>
+    <button class="auth-social" onclick="handleAppleAuth()" style="margin-top:8px">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+      Apple ile devam et
+    </button>
+    <div class="auth-switch" id="authSwitch">Zaten hesabın var mı? <a onclick="toggleAuthMode()">Giriş Yap</a></div>
+  </div>
+</div>
+
+<!-- PAYWALL SCREEN -->
+<div class="paywall-page" id="paywallPage">
+  <div class="paywall-frame">
+    <div class="paywall-icon">✨</div>
+    <div class="paywall-title">Gong Premium</div>
+    <div class="paywall-desc">Sınırsız erişimle hayatını dönüştürmeye başla. Tüm sesli çalışmalar, programlar ve yeni içerikler seninle.</div>
+    <div class="paywall-features">
+      <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Tüm kategorilere sınırsız erişim</div>
+      <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Yeni içerikler her hafta eklenir</div>
+      <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kişisel ilerleme takibi</div>
+      <div class="paywall-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Çevrimdışı dinleme</div>
+    </div>
+    <div class="paywall-plans">
+      <div class="paywall-plan-wrap">
+        <div class="paywall-plan selected" id="planYearly" onclick="selectPlan('yearly')">
+          <div class="paywall-plan-left">
+            <div class="paywall-plan-name">Yıllık</div>
+            <div class="paywall-plan-detail">7 gün ücretsiz dene · sonra ₺599,99/yıl</div>
+          </div>
+          <div class="paywall-plan-price">₺50<span style="font-size:12px;font-weight:400">/ay</span></div>
+        </div>
+        <div class="paywall-plan-badge">EN POPÜLER</div>
+      </div>
+      <div class="paywall-plan" id="planMonthly" onclick="selectPlan('monthly')">
+        <div class="paywall-plan-left">
+          <div class="paywall-plan-name">Aylık</div>
+          <div class="paywall-plan-detail">7 gün ücretsiz dene · sonra ₺79,99/ay</div>
+        </div>
+        <div class="paywall-plan-price">₺79,99<span style="font-size:12px;font-weight:400">/ay</span></div>
+      </div>
+    </div>
+    <button class="paywall-start" onclick="startTrial()">7 Gün Ücretsiz Başla</button>
+    <div class="paywall-skip" onclick="skipPaywall()">Önce göz atmak istiyorum</div>
+    <div class="paywall-legal">7 günlük deneme süresi sonunda abonelik otomatik başlar.<br>İstediğin zaman iptal edebilirsin.</div>
+  </div>
+</div>
+
+<!-- SOFT NUDGE MODAL -->
+<div class="nudge-overlay" id="nudgeOverlay">
+  <div class="nudge-box">
+    <div class="nudge-emoji">🌟</div>
+    <div class="nudge-title">Gong sana iyi geliyor!</div>
+    <div class="nudge-text" id="nudgeText">Derin ve kesintisiz uykulara devam etmek, her gün biraz daha iyi hissetmek için sınırsız erişimi aç.</div>
+    <button class="nudge-btn" onclick="nudgeToPaywall()">Sınırsız Erişimi Aç</button>
+    <div class="nudge-close" onclick="closeNudge()">Şimdilik değil</div>
+  </div>
+</div>
+
+<!-- TRIAL WELCOME -->
+<div class="trial-welcome" id="trialWelcome">
+  <div class="trial-welcome-inner">
+    <div class="trial-welcome-icon">🎉</div>
+    <div class="trial-welcome-title">Denemen Başladı!</div>
+    <div class="trial-welcome-desc">7 gün boyunca tüm içeriklere sınırsız erişimin var. Keyifle keşfet!</div>
+    <div class="trial-welcome-feats">
+      <div class="trial-welcome-feat">✓ Tüm kategoriler açık</div>
+      <div class="trial-welcome-feat">✓ Sınırsız dinleme</div>
+      <div class="trial-welcome-feat">✓ İstediğin zaman iptal et</div>
+    </div>
+    <button class="trial-welcome-btn" onclick="closeTrialWelcome()">Keşfetmeye Başla</button>
+  </div>
+</div>
+
+<!-- PLAYER -->
+<div class="player-page" id="playerPage">
+  <div class="player-inner">
+    <div class="player-close" onclick="closePlayer()"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+    <div class="player-art">
+      <div class="player-glow"></div>
+      <div class="player-circle">
+        <svg viewBox="0 0 80 80" width="80" height="80"><circle cx="40" cy="40" r="36" fill="none" stroke="rgba(232,168,46,.3)" stroke-width="2"/><polygon points="34,26 56,40 34,54" fill="rgba(232,168,46,.8)"/></svg>
+      </div>
+    </div>
+    <div class="player-title" id="playerTitle">İçerik Adı</div>
+    <div class="player-author">Gong</div>
+    <div class="player-bar">
+      <div class="player-bar-fill" id="playerProgress" style="width:0%"></div>
+    </div>
+    <div class="player-times"><span>0:00</span><span>15:00</span></div>
+    <div class="player-controls">
+      <div class="player-ctrl-btn"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--w70)" stroke-width="2" stroke-linecap="round"><polygon points="19 20 9 12 19 4" fill="var(--w70)"/><line x1="5" y1="4" x2="5" y2="20"/></svg></div>
+      <div class="player-play-btn" id="playerPlayBtn" onclick="togglePlay()">
+        <svg viewBox="0 0 24 24" width="40" height="40"><polygon points="8,4 20,12 8,20" fill="var(--gold)"/></svg>
+      </div>
+      <div class="player-ctrl-btn"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--w70)" stroke-width="2" stroke-linecap="round"><polygon points="5 4 15 12 5 20" fill="var(--w70)"/><line x1="19" y1="4" x2="19" y2="20"/></svg></div>
+    </div>
+    <div class="player-hint">Ses dosyası yüklenecek...</div>
+  </div>
+</div>
+
+<div class="quiz" id="quiz">
+  <div class="quiz-h">
+    <div class="quiz-back" onclick="closeQ()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="quiz-ht">Ruh Hali Anketi</div>
+  </div>
+  <div class="quiz-p"><div class="quiz-pb" id="qBar" style="width:20%"></div></div>
+  <div class="quiz-c"><div class="quiz-q" id="qQ"></div><div class="quiz-opts" id="qO"></div></div>
+</div>
+
+<div class="sos-page" id="sosPage">
+  <div class="sos-page-inner">
+    <div class="sos-page-h">
+      <div class="sos-page-back" onclick="goHome()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="sos-page-title">Hangi konuda desteğe ihtiyacın var?</div>
+    </div>
+    <div class="sos-grid" id="sosGrid"></div>
+  </div>
+</div>
+
+<div class="search-page" id="searchPage">
+  <div class="search-page-inner">
+    <div class="search-page-h">
+      <div class="search-page-back" onclick="goHome()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Ara..." id="searchInput">
+      </div>
+    </div>
+    <div class="search-scroll">
+      <div class="search-cats" id="searchCats"></div>
+      <div class="mood" onclick="openQ()" style="margin-top:4px">
+        <div class="mood-i">💫</div>
+        <div class="mood-txt"><div class="mood-t">Nasıl Hissediyorsun?</div><div class="mood-s">Moduna göre öneriler</div></div>
+        <div class="mood-a">&#8250;</div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="explore-scroll" id="exploreRow1"></div>
+      <div style="height:6px"></div>
+      <div class="explore-scroll" id="exploreRow2"></div>
+      <div style="height:30px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="uyku-page" id="uykuPage">
+  <div class="uyku-frame">
+    <div class="uyku-bg">
+      <div class="uyku-stars" id="uykuStars"></div>
+      <div class="shooting-star" style="top:10%;left:70%"></div>
+      <div class="shooting-star" style="top:5%;left:40%"></div>
+    </div>
+    <div class="uyku-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="uykuBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Uyku</div>
+      </div>
+      <div class="uyku-tabs" id="uykuTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Uyumakta zorlanıyor, gecenin bir yarısı uyanıp tekrar uykuya dalamıyor musun? Yönlendirmeli çalışmalar, sesler ve seni bambaşka diyarlara götürecek hikayelerle zihninin şalterini indirip deliksiz bir uykuya geç.</div>
+        <div id="uykuScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stres-page" id="stresPage">
+  <div class="stres-frame">
+    <div class="stres-bg">
+      <div class="stres-orbs">
+        <div class="stres-orb o1"></div>
+        <div class="stres-orb o2"></div>
+        <div class="stres-orb o3"></div>
+      </div>
+    </div>
+    <div class="stres-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="stresBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Stres / Anksiyete</div>
+      </div>
+      <div class="uyku-tabs" id="stresTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Kriz anlarındaki acil desteklerden, kaygıyı kökünden çözmeye yardımcı olacak pratiklere kadar seni yeniden merkezine döndürecek her şey burada. Günlük stresi yönet, uçuş korkusu, ebeveynlik stresi veya finansal kaygılar gibi özel durumlar için zihnini hafiflet.</div>
+        <div id="stresScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="iliski-page" id="iliskiPage">
+  <div class="iliski-frame">
+    <div class="iliski-bg">
+      <div class="iliski-waves">
+        <div class="iliski-wave w1"></div>
+        <div class="iliski-wave w2"></div>
+        <div class="iliski-wave w3"></div>
+      </div>
+    </div>
+    <div class="iliski-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="iliskiBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">İlişkiler</div>
+      </div>
+      <div class="uyku-tabs" id="iliskiTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Mevcut ilişkini daha sağlam, sevgi ve güven dolu bir yere taşımak, hayatına doğru insanı çekmek ya da toksik döngülerden kurtulmak için rehberin. O zayıf anında "eski sevgiliye mesaj atmamak" için kendini durdurabileceğin, ayrılık sonrası acını dindirip sınırlarını yeniden inşa edebileceğin destekler burada.</div>
+        <div id="iliskiScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bolluk-page" id="bollukPage">
+  <div class="bolluk-frame">
+    <div class="bolluk-bg">
+      <div class="bolluk-glow">
+        <div class="bolluk-g g1"></div>
+        <div class="bolluk-g g2"></div>
+        <div class="bolluk-g g3"></div>
+      </div>
+    </div>
+    <div class="bolluk-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="bollukBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Bolluk Bereket</div>
+      </div>
+      <div class="uyku-tabs" id="bollukTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Parayla olan ilişkini yeniden tanımlamaya hazır mısın? Zihnindeki farkında olmadığın kıtlık bilincini kırmak, bolluğu hayatına davet etmek, finansal kaygılarından arınmak için ayakları yere basan zihinsel çalışmalar.</div>
+        <div id="bollukScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ebeveyn-page" id="ebeveynPage">
+  <div class="ebeveyn-frame">
+    <div class="ebeveyn-bg">
+      <div class="ebeveyn-glow">
+        <div class="ebeveyn-gl e1"></div>
+        <div class="ebeveyn-gl e2"></div>
+        <div class="ebeveyn-gl e3"></div>
+      </div>
+    </div>
+    <div class="ebeveyn-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="ebeveynBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Ebeveynler</div>
+      </div>
+      <div class="uyku-tabs" id="ebeveynTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Ebeveynlik dünyanın en güzel ama en yorucu mesaisi. Çocuğunla daha huzurlu, bağ odaklı bir iletişim kurmak için rehberlikler ve kendi sabrının tükendiği o zorlu anlarda merkezine dönmeni sağlayacak özel destekler.</div>
+        <div id="ebeveynScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="olumsuz-page" id="olumsuzPage">
+  <div class="olumsuz-frame">
+    <div class="olumsuz-bg">
+      <div class="olumsuz-glow">
+        <div class="olumsuz-gl o1"></div>
+        <div class="olumsuz-gl o2"></div>
+        <div class="olumsuz-gl o3"></div>
+      </div>
+    </div>
+    <div class="olumsuz-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="olumsuzBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Olumsuz Duygular</div>
+      </div>
+      <div class="uyku-tabs" id="olumsuzTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">İyi hissetmemek sorun değil, hepimizin karanlıkta kaldığı anlar vardır. İçinden çıkamadığın melankoli, öfke patlamaları, kıskançlık ya da ani çöküş anlarında duygularını bastırmadan dönüştürmenin yolları burada.</div>
+        <div id="olumsuzScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ogrenci-page" id="ogrenciPage">
+  <div class="ogrenci-frame">
+    <div class="ogrenci-bg">
+      <div class="ogrenci-glow">
+        <div class="ogrenci-gl g1"></div>
+        <div class="ogrenci-gl g2"></div>
+        <div class="ogrenci-gl g3"></div>
+      </div>
+    </div>
+    <div class="ogrenci-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="ogrenciBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Odaklanma</div>
+      </div>
+      <div class="uyku-tabs" id="ogrenciTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Zihnini netleştir, derin odaklanmaya geç ve o erteleme döngüsünü kır. Lazer gibi odaklanmanı sağlayan, sınav kaygısını azaltan ve işine en verimli şekilde dalmanı destekleyen sesli çalışmalar.</div>
+        <div id="ogrenciScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ozsaygi-page" id="ozsaygiPage">
+  <div class="ozsaygi-frame">
+    <div class="ozsaygi-bg">
+      <div class="ozsaygi-glow">
+        <div class="ozsaygi-gl s1"></div>
+        <div class="ozsaygi-gl s2"></div>
+        <div class="ozsaygi-gl s3"></div>
+      </div>
+    </div>
+    <div class="ozsaygi-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="ozsaygiBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Öz Saygı / Öz Sevgi</div>
+      </div>
+      <div class="uyku-tabs" id="ozsaygiTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Öz sevgi her an mutlu olmak değil, en zor anında bile kendi elini bırakmamaktır. Hak ettiğin değeri dışarıda aramayı bırakıp, kendi içinde sarsılmaz bir öz saygı inşa etmek için dürüst ve şefkatli rehberin.</div>
+        <div id="ozsaygiScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="saglik-page" id="saglikPage">
+  <div class="saglik-frame">
+    <div class="saglik-bg">
+      <div class="saglik-glow">
+        <div class="saglik-gl h1"></div>
+        <div class="saglik-gl h2"></div>
+        <div class="saglik-gl h3"></div>
+      </div>
+    </div>
+    <div class="saglik-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="saglikBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Sağlık</div>
+      </div>
+      <div class="uyku-tabs" id="saglikTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Bedenin muazzam bir iyileşme kapasitesi var; yeter ki ona doğru sinyalleri gönder. Hücresel yenilenmeyi destekleyen, bağışıklık sistemini güçlendiren ve sabahları yataktan çok daha canlı, enerjik kalkmanı sağlayacak titreşim ve somatik rahatlama pratikleri.</div>
+        <div id="saglikScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="yas-page" id="yasPage">
+  <div class="yas-frame">
+    <div class="yas-bg">
+      <div class="yas-glow">
+        <div class="yas-gl y1"></div>
+        <div class="yas-gl y2"></div>
+        <div class="yas-gl y3"></div>
+      </div>
+    </div>
+    <div class="yas-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="yasBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Yas</div>
+      </div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Sevdiğin birini veya bir şeyi kaybetmenin yarattığı o derin sızıyla baş başa kaldığında... Hissettiğin acıyı şefkatle sarmalayan ve bu zorlu dönemde yalnız olmadığını hissettiren, uzmanların önerdiği yöntemlerle yas sürecini atlatmanı sağlayan bir yol arkadaşı.</div>
+        <div id="yasScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="evcil-page" id="evcilPage">
+  <div class="evcil-frame">
+    <div class="evcil-bg">
+      <div class="evcil-glow">
+        <div class="evcil-gl v1"></div>
+        <div class="evcil-gl v2"></div>
+        <div class="evcil-gl v3"></div>
+      </div>
+    </div>
+    <div class="evcil-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="evcilBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Evcil Hayvanlar</div>
+      </div>
+      <div class="uyku-tabs" id="evcilTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Hayatımızı güzelleştiren tüylü dostlarımızın genel sağlığını destekleyen özel frekanslar, aranızdaki bağı daha da güçlendirecek pratikler ve günlük bakımlarında senin enerjini de yüksek tutacak çalışmalar.</div>
+        <div id="evcilScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="kilo-page" id="kiloPage">
+  <div class="kilo-frame">
+    <div class="kilo-bg">
+      <div class="kilo-glow">
+        <div class="kilo-gl k1"></div>
+        <div class="kilo-gl k2"></div>
+        <div class="kilo-gl k3"></div>
+      </div>
+    </div>
+    <div class="kilo-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="kiloBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Kilo Verme</div>
+      </div>
+      <div class="uyku-tabs" id="kiloTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Kilo verme sürecini bir savaş olmaktan çıkarıp, bedeninle yeniden dost olma yolculuğu. Kendi değerini hatırlamayı merkeze alan, içeriden dışarıya kalıcı bir dönüşüm başlatan, duygusal yeme ataklarının önüne geçen pratikler.</div>
+        <div id="kiloScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nazar-page" id="nazarPage">
+  <div class="nazar-frame">
+    <div class="nazar-bg">
+      <div class="nazar-glow">
+        <div class="nazar-gl n1"></div>
+        <div class="nazar-gl n2"></div>
+        <div class="nazar-gl n3"></div>
+      </div>
+    </div>
+    <div class="nazar-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="nazarBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Nazar / Kötü Enerji</div>
+      </div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Üzerindeki ağırlığın, hayatındaki tersliklerin nedeni dışarıdan gelen kem gözler mi? Çevrenden yansıyan negatif enerjilere karşı korunma kalkanı oluşturacak frekans çalışmaları.</div>
+        <div id="nazarScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bagim-page" id="bagimPage">
+  <div class="bagim-frame">
+    <div class="bagim-bg">
+      <div class="bagim-glow">
+        <div class="bagim-gl b1"></div>
+        <div class="bagim-gl b2"></div>
+        <div class="bagim-gl b3"></div>
+      </div>
+    </div>
+    <div class="bagim-inner">
+      <div class="uyku-h">
+        <div class="uyku-back" onclick="bagimBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="uyku-title">Bağımlılıklar</div>
+      </div>
+      <div class="uyku-tabs" id="bagimTabs"></div>
+      <div class="uyku-scroll">
+        <div class="uyku-intro">Sigara, alkol, duygusal yeme veya ekran bağımlılığı... Bunların esiri olmak zorunda değilsin. İradeni güçlendiren, zararlı alışkanlıkları kökünden değiştiren, kriz anlarında o şiddetli dalgayı atlatmanı sağlayacak pratikler.</div>
+        <div id="bagimScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="home">
+    <div class="top">
+      <div class="top-btn" onclick="resetApp()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="top-logo" id="tLogo"></div>
+      <div class="top-btn" onclick="alert('Bildirimler')">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="badge"></div>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <!-- SOS -->
+      <div class="sos-area">
+        <div class="sos-top-label">ACİL DESTEK İÇİN DOKUN</div>
+        <div class="sos-wrap" onclick="openSOS()">
+          <svg viewBox="0 0 200 200" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#d8d0e8"/>
+                <stop offset="30%" stop-color="#a090b8"/>
+                <stop offset="50%" stop-color="#c8c0dc"/>
+                <stop offset="70%" stop-color="#8878a8"/>
+                <stop offset="100%" stop-color="#b0a8c8"/>
+              </linearGradient>
+              <radialGradient id="purple" cx=".4" cy=".35" r=".65">
+                <stop offset="0%" stop-color="#b070e0"/>
+                <stop offset="35%" stop-color="#8c4cc8"/>
+                <stop offset="75%" stop-color="#6830b0"/>
+                <stop offset="100%" stop-color="#4a1890"/>
+              </radialGradient>
+              <radialGradient id="hi" cx=".42" cy=".28" r=".45">
+                <stop offset="0%" stop-color="rgba(255,240,255,.28)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="96" fill="url(#rim)"/>
+            <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+            <circle cx="100" cy="100" r="78" fill="url(#purple)"/>
+            <circle cx="100" cy="100" r="78" fill="url(#hi)"/>
+            <text x="100" y="117" text-anchor="middle" font-family="Quicksand,sans-serif" font-size="50" font-weight="300" fill="rgba(240,220,255,.92)" letter-spacing="7" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">SOS</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="sec-h" id="secCats"><div class="sec-t">Kategoriler</div><div class="sec-arrow" onclick="scrollSection('cats',1)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
+      <div class="cat-scroll" id="cats"></div>
+      <div class="dots" id="dots"></div>
+
+      <div class="sec-h" id="secFree" style="display:none"><div class="sec-t">Ücretsiz İçerikler</div><div class="sec-arrow" onclick="scrollSection('freeCards',200)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
+      <div class="new-scroll" id="freeCards"></div>
+
+      <div class="sec-h" id="secNew"><div class="sec-t">Yeni Eklenenler</div><div class="sec-arrow" onclick="scrollSection('news',220)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
+      <div class="new-scroll" id="news"></div>
+
+      <div class="mood" onclick="openQ()">
+        <div class="mood-i">🧠</div>
+        <div class="mood-txt"><div class="mood-t">Nasıl Hissediyorsun?</div><div class="mood-s">Moduna göre öneriler</div></div>
+        <div class="mood-a">&#8250;</div>
+      </div>
+
+      <div class="sec-h" id="secRec"><div class="sec-t">Sana Özel Öneriler</div><div class="sec-arrow" onclick="scrollSection('recs',170)"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div></div>
+      <div class="reco-scroll" id="recs"></div>
+      <div style="height:30px"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-i on" id="navHome" onclick="goHome()"><div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="nav-l">Ana Sayfa</div></div>
+  <div class="nav-i" id="navSOS" onclick="openSOS()"><div class="nav-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><text x="12" y="15.5" text-anchor="middle" font-family="Quicksand,sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none">SOS</text></svg></div><div class="nav-l">SOS</div></div>
+  <div class="nav-i" id="navSearch" onclick="openSearch()"><div class="nav-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="nav-l">Arama</div></div>
+  <div class="nav-i" id="navProfile"><div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="nav-l">Profil</div></div>
+</div>
+
+<script>
+// ===== SUPABASE CLIENT =====
+const SUPABASE_URL = 'https://uhcqzogrrhjewvmsbzmc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoY3F6b2dycmhqZXd2bXNiem1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDExOTUsImV4cCI6MjA5MjcxNzE5NX0.v96UYmd70_EEuiQ6tX466NYmKF6CsyinVaznL-LkGl0';
+let supabase = null;
+
+function loadSupabase() {
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload = () => {
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase client ready');
+      } catch(e) { console.warn('Supabase init failed:', e.message); }
+      resolve();
+    };
+    s.onerror = () => { console.warn('Supabase JS could not be loaded'); resolve(); };
+    document.head.appendChild(s);
+  });
+}
+
+// ===== SUPABASE DATA LAYER =====
+let dbCategories = [];
+let dbSubcategories = [];
+let dbContents = [];
+let currentUser = null;
+let userSubscription = null;
+
+let supabaseReady = false;
+
+async function fetchAppData() {
+  if (!supabase) return;
+  try {
+    const [catRes, subRes, conRes] = await Promise.all([
+      supabase.from('categories').select('*').eq('is_active', true).order('sort_order'),
+      supabase.from('subcategories').select('*').eq('is_active', true).order('sort_order'),
+      supabase.from('contents').select('*').eq('is_active', true).order('sort_order')
+    ]);
+    if (catRes.data) dbCategories = catRes.data;
+    if (subRes.data) dbSubcategories = subRes.data;
+    if (conRes.data) dbContents = conRes.data;
+    supabaseReady = dbCategories.length > 0;
+    console.log('Supabase data loaded:', dbCategories.length, 'categories,', dbSubcategories.length, 'subcategories,', dbContents.length, 'contents');
+  } catch (e) {
+    console.warn('Supabase fetch failed, using local data:', e.message);
+    supabaseReady = false;
+  }
+}
+
+// ===== HİBRİT RENDER SİSTEMİ =====
+// Supabase verisi varsa onu kullan, yoksa hardcoded dizilere düş
+function dbGetTabs(categoryKey) {
+  if (!supabaseReady) return null;
+  const subs = getSubcategories(categoryKey);
+  return subs.length > 0 ? subs.map(s => s.name) : null;
+}
+
+function dbGetTabContents(categoryKey, tabIndex) {
+  if (!supabaseReady) return null;
+  const subs = getSubcategories(categoryKey);
+  if (!subs[tabIndex]) return null;
+  const items = getContentsBySubcategory(subs[tabIndex].id);
+  if (items.length === 0) return null;
+  return items.map(c => ({
+    dur: c.duration_text || '',
+    title: c.title,
+    author: c.author || '',
+    grad: c.card_gradient || 'linear-gradient(135deg,#1a1a2e,#2a2a4e)',
+    desc: c.description || '',
+    is_premium: c.is_premium
+  }));
+}
+
+function dbGetDirectContents(categoryKey) {
+  if (!supabaseReady) return null;
+  const items = getContentsByCategory(categoryKey).filter(c => !c.subcategory_id);
+  if (items.length === 0) return null;
+  return items.map(c => ({
+    dur: c.duration_text || '',
+    title: c.title,
+    author: c.author || '',
+    desc: c.description || '',
+    is_premium: c.is_premium
+  }));
+}
+
+async function checkAuth() {
+  if (!supabase) return null;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    // Abonelik kontrolü
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('*, subscription_plans(*)')
+      .eq('user_id', session.user.id)
+      .in('status', ['trial', 'active'])
+      .gt('expires_at', new Date().toISOString())
+      .order('expires_at', { ascending: false })
+      .limit(1);
+    if (data && data.length > 0) userSubscription = data[0];
+  }
+  return currentUser;
+}
+
+function isPremiumUser() {
+  return userSubscription !== null;
+}
+
+// Kategoriye ait içerikleri getir
+function getContentsByCategory(categoryKey) {
+  const cat = dbCategories.find(c => c.key === categoryKey);
+  if (!cat) return [];
+  return dbContents.filter(c => c.category_id === cat.id);
+}
+
+// Alt kategoriye ait içerikleri getir
+function getContentsBySubcategory(subcategoryId) {
+  return dbContents.filter(c => c.subcategory_id === subcategoryId);
+}
+
+// Kategorinin alt kategorilerini getir
+function getSubcategories(categoryKey) {
+  const cat = dbCategories.find(c => c.key === categoryKey);
+  if (!cat) return [];
+  return dbSubcategories.filter(s => s.category_id === cat.id);
+}
+
+// Auth listener
+if (supabase) supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    currentUser = session.user;
+    console.log('User signed in:', currentUser.email);
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    userSubscription = null;
+  }
+});
+
+// Uygulama başlatılırken veri çek (splash sırasında)
+// fetchAppData ve checkAuth, window.load'da çağrılacak
+
+// LOGO
+const LOGO_SVG=`<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+<path d="M48,42 C48,26 38,16 26,16 C14,16 4,26 4,42 C4,58 14,68 26,68 C38,68 48,58 48,42Z" fill="none" stroke="#e8a82e" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M48,42 L48,68 C48,84 38,92 24,92" fill="none" stroke="#e8a82e" stroke-width="11" stroke-linecap="round"/>
+<circle cx="102" cy="42" r="27" fill="#e8a82e"/><circle cx="102" cy="42" r="27" fill="none" stroke="#1a2942" stroke-width="2"/>
+<g stroke="#1a2942" stroke-width="2.8" stroke-linecap="round"><line x1="91" y1="35" x2="91" y2="49"/><line x1="96" y1="30" x2="96" y2="54"/><line x1="101" y1="25" x2="101" y2="59"/><line x1="106" y1="30" x2="106" y2="54"/><line x1="111" y1="35" x2="111" y2="49"/></g>
+<path d="M146,68 L146,16" fill="none" stroke="#e8a82e" stroke-width="11" stroke-linecap="round"/>
+<path d="M146,28 C150,16 160,10 172,16 C178,20 182,30 182,40 L182,68" fill="none" stroke="#e8a82e" stroke-width="11" stroke-linecap="round"/>
+<path d="M240,42 C240,26 230,16 218,16 C206,16 196,26 196,42 C196,58 206,68 218,68 C230,68 240,58 240,42Z" fill="none" stroke="#e8a82e" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M240,42 L240,68 C240,84 230,92 216,92" fill="none" stroke="#e8a82e" stroke-width="11" stroke-linecap="round"/>
+</svg>`;
+function loadLogo(id){
+  const c=document.getElementById(id),img=new Image();
+  img.src='logo.png';img.alt='Gong';img.style.cssText='width:100%;height:100%;object-fit:contain;display:block';
+  img.onload=()=>{c.innerHTML='';c.appendChild(img)};
+  img.onerror=()=>{c.innerHTML=LOGO_SVG};
+  c.innerHTML=LOGO_SVG;
+}
+loadLogo('sLogo');loadLogo('tLogo');
+
+// SVG İKONLAR
+const ICONS={
+  uyku:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M29,9 C20,9 14,15 14,22 C14,29 20,35 29,35 C22,33 17,28 17,22 C17,15 22,11 29,9Z" fill="rgba(255,255,255,.8)"/>
+    <circle cx="11" cy="9" r="1.8" fill="rgba(255,255,255,.4)"/>
+    <circle cx="7" cy="15" r="1.2" fill="rgba(255,255,255,.3)"/>
+    <circle cx="9" cy="5" r="1" fill="rgba(255,255,255,.25)"/>
+  </svg>`,
+  stres:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M23,5 L15,19 L22,19 L17,35" stroke="rgba(255,255,255,.85)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  iliski:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,30 L10,19 C7,15 8.5,8.5 13.5,8 C17,7.5 19.5,10 20,13 C20.5,10 23,7.5 26.5,8 C31.5,8.5 33,15 30,19Z" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linejoin="round"/>
+  </svg>`,
+  bolluk:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="20" y1="32" x2="20" y2="14" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M20,14 C20,14 25,7 32,8 C32,15 26,18 20,14Z" stroke="rgba(255,255,255,.82)" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M20,22 C20,22 14,16 8,18 C9,24 14.5,26 20,22Z" stroke="rgba(255,255,255,.7)" stroke-width="1.8" stroke-linejoin="round"/>
+  </svg>`,
+  ogrenci:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="13" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+    <circle cx="20" cy="20" r="7" stroke="rgba(255,255,255,.6)" stroke-width="1.6"/>
+    <circle cx="20" cy="20" r="2.5" fill="rgba(255,255,255,.82)"/>
+    <line x1="20" y1="5" x2="20" y2="7" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="20" y1="33" x2="20" y2="35" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="20" x2="7" y2="20" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="33" y1="20" x2="35" y2="20" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+  bagim:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="14" cy="20" r="5.5" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+    <circle cx="26" cy="20" r="5.5" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+    <line x1="6" y1="20" x2="8.5" y2="20" stroke="rgba(255,255,255,.75)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="31.5" y1="20" x2="34" y2="20" stroke="rgba(255,255,255,.75)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="20" y1="14" x2="22" y2="26" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>`,
+  kilo:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9,30 C9,22 13.5,13 20,9 C26.5,13 31,22 31,30" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="7" y1="30" x2="33" y2="30" stroke="rgba(255,255,255,.65)" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="20" cy="9" r="2.5" fill="rgba(255,255,255,.8)"/>
+    <line x1="20" y1="20" x2="20" y2="30" stroke="rgba(255,255,255,.35)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2.5"/>
+  </svg>`,
+  ebeveyn:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="14" cy="13" r="5" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+    <path d="M5,34 C5,27 9,23 14,23 C19,23 23,27 23,34" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="28" cy="17" r="3.5" stroke="rgba(255,255,255,.65)" stroke-width="1.6"/>
+    <path d="M22,34 C22,29.5 24.5,27 28,27 C31.5,27 34,29.5 34,34" stroke="rgba(255,255,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>`,
+  nazar:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="20" cy="20" rx="17" ry="11" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+    <circle cx="20" cy="20" r="7" stroke="rgba(255,255,255,.7)" stroke-width="1.8"/>
+    <circle cx="20" cy="20" r="3" fill="rgba(255,255,255,.8)"/>
+  </svg>`,
+  saglik:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="13" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+    <path d="M10,20 L15,20 L17.5,13 L22.5,27 L25,20 L30,20" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  olumsuz:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8,16 Q14,8 20,12 Q26,8 32,16 Q36,24 28,30 L20,36 L12,30 Q4,24 8,16Z" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="15" cy="19" r="1.5" fill="rgba(255,255,255,.7)"/>
+    <circle cx="25" cy="19" r="1.5" fill="rgba(255,255,255,.7)"/>
+    <path d="M15,27 Q20,24 25,27" stroke="rgba(255,255,255,.6)" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>`,
+  ozsaygi:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,5 L23.5,14.5 L34,14.5 L26,20.5 L29,30 L20,24 L11,30 L14,20.5 L6,14.5 L16.5,14.5Z" stroke="rgba(255,255,255,.82)" stroke-width="1.8" stroke-linejoin="round"/>
+  </svg>`,
+  yas:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,6 C20,6 12,15 12,23 C12,29 15.5,34 20,34 C24.5,34 28,29 28,23 C28,15 20,6 20,6Z" stroke="rgba(255,255,255,.82)" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M20,18 L20,26" stroke="rgba(255,255,255,.6)" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="20" cy="30" r="1.5" fill="rgba(255,255,255,.7)"/>
+  </svg>`,
+  evcil:`<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="12" cy="11" rx="4" ry="5.5" stroke="rgba(255,255,255,.75)" stroke-width="1.8"/>
+    <ellipse cx="28" cy="11" rx="4" ry="5.5" stroke="rgba(255,255,255,.75)" stroke-width="1.8"/>
+    <ellipse cx="7" cy="22" rx="3.5" ry="4.5" stroke="rgba(255,255,255,.65)" stroke-width="1.6"/>
+    <ellipse cx="33" cy="22" rx="3.5" ry="4.5" stroke="rgba(255,255,255,.65)" stroke-width="1.6"/>
+    <ellipse cx="20" cy="28" rx="10" ry="9" stroke="rgba(255,255,255,.82)" stroke-width="2"/>
+  </svg>`
+};
+
+const cats=[
+  {n:"Uyku",k:"uyku"},{n:"Stres / Anksiyete",k:"stres"},{n:"İlişkiler",k:"iliski"},
+  {n:"Bolluk Bereket",k:"bolluk"},{n:"Odaklanma",k:"ogrenci"},{n:"Bağımlılıklar",k:"bagim"},
+  {n:"Kilo Verme",k:"kilo"},{n:"Ebeveynler",k:"ebeveyn"}
+];
+const newI=[
+  {t:"7 Günde Sigaradan Kurtul",m:"7 günlük program",b:"Yeni",e:"🚭",bg:"bg7"},
+  {t:"Derin Uyku Seansı",m:"25 dakika",b:"Yeni",e:"🌙",bg:"bg1"},
+  {t:"Stres İçin 5 Günlük Çalışma",m:"5 günlük program",b:"Popüler",e:"🌊",bg:"bg2"},
+  {t:"Bolluk ve Bereket Çalışması",m:"18 dakika",b:"Yeni",e:"✨",bg:"bg3"},
+  {t:"Nazar ve Kötü Enerjiden Arınma",m:"20 dakika",b:"Yeni",e:"🧿",bg:"bg6"}
+];
+const recs=[
+  {t:"Sabah Rutini",m:"12 dk",e:"☀️",bg:"bg3"},
+  {t:"Pozitif Başlangıç",m:"10 dk",e:"🌅",bg:"bg1"},
+  {t:"Kaygı Yönetimi",m:"15 dk",e:"🌿",bg:"bg2"},
+  {t:"Özgüven Artırma",m:"20 dk",e:"💪",bg:"bg4"},
+  {t:"Uyku Öncesi Rahatlama",m:"30 dk",e:"🌙",bg:"bg1"}
+];
+const freeI=[
+  {t:"Derin Nefes ile Rahatlama",m:"10 dk · Stres",e:"🌬️",bg:"bg2"},
+  {t:"Huzurlu Uyku Rehberi",m:"20 dk · Uyku",e:"🌙",bg:"bg1"},
+  {t:"Güne Pozitif Başla",m:"12 dk · Öz Saygı",e:"☀️",bg:"bg3"},
+  {t:"Kaygıdan Arınma",m:"15 dk · Stres",e:"🍃",bg:"bg2"},
+  {t:"Bolluk Frekansı",m:"18 dk · Bolluk",e:"✨",bg:"bg4"}
+];
+const qz=[
+  {q:"Bugün kendini nasıl hissediyorsun?",o:["Harika / Enerjik","İyi / Normal","Biraz yorgun","Stresli / Bunalmış","Çok kötü"]},
+  {q:"Son günlerde uyku kaliten nasıl?",o:["Çok iyi uyuyorum","Fena değil","Bazen zorluk çekiyorum","Çok kötü uyuyorum"]},
+  {q:"Şimdi en çok neye ihtiyacın var?",o:["Rahatlamaya","Motivasyona","Odaklanmaya","İç huzura","Uyku desteğine"]},
+  {q:"Hangi konuda destek almak istersin?",o:["Stres / Kaygı","Uyku","Öz güven","İlişkiler","Genel iyilik hali"]},
+  {q:"Daha önce kendine zaman ayırdın mı?",o:["Hiç ayırmadım","Birkaç kez denedim","Ara sıra yapıyorum","Düzenli yapıyorum"]}
+];
+
+// SOS KATEGORİLERİ - sıralama: Panik, Uyku, Öfke, İlişkiler, Bağımlılık, Sınavlar, Ebeveynlik, Uçak
+const sosCats=[
+  {name:"Panik / Anksiyete",color:"#e84030",desc:"Panik atak veya yoğun kaygı anında seni sakinleştirmek için hızlı teknikler ve sesli rehberlik."},
+  {name:"Uyku",color:"#6080c0",desc:"Uykuya dalamıyorsan, zihni yavaşlatan ve rahatlamayı sağlayan özel içerikler burada."},
+  {name:"Öfke",color:"#d06030",desc:"Öfke patlaması yaşadığında kontrol sağlamak için anlık soğuma teknikleri."},
+  {name:"İlişkiler",color:"#c060a0",desc:"İlişki stresi yaşadığında seni destekleyecek ve yön gösterecek içerikler."},
+  {name:"Bağımlılık",color:"#a08060",desc:"Dürtülerle mücadele ettiğin anlarda sana güç verecek destek programları."},
+  {name:"Sınavlar",color:"#8070c0",desc:"Sınav kaygısı ile başa çıkmak ve odaklanmayı artırmak için pratik yöntemler."},
+  {name:"Ebeveynlik",color:"#5090a0",desc:"Ebeveynlik stresi yaşadığın anlarda sakinleşmeni sağlayacak kısa rehberler."},
+  {name:"Uçak Korkusu",color:"#50a0d0",desc:"Uçuş öncesi veya sırasında korkunu yönetmek için adım adım rehberlik."}
+];
+
+// ARAMA SAYFASI - Keşfet kartları (düzenlemek için bu dizileri değiştirin)
+const exploreRow1=[
+  {label:"Uyku",e:"🌙",txt:"Bu gece de mi uyku tutmadı?",grad:"linear-gradient(135deg,#1a237e,#283593)"},
+  {label:"Panik/Kaygı",e:"😰",txt:"Göğsündeki o baskıyı kaldıralım",grad:"linear-gradient(135deg,#b71c1c,#c62828)"},
+  {label:"Ekonomi",e:"💸",txt:"Geçim stresini at",grad:"linear-gradient(135deg,#a08620,#c4a028)"},
+  {label:"Yeme Dürtüsü",e:"🍃",txt:"Buzdolabının kapağını açmadan önce buraya bak",grad:"linear-gradient(135deg,#2e7d32,#43a047)"},
+  {label:"İlişkiler",e:"💔",txt:"\"Neden böyle oldu\" diye düşünmekten yorulduğunda...",grad:"linear-gradient(135deg,#ad1457,#d81b60)"}
+];
+const exploreRow2=[
+  {label:"Bağımlılıklar",e:"🔗",txt:"Sigara, alkol, ekran... Döngüyü kır",grad:"linear-gradient(135deg,#bf360c,#e64a19)"},
+  {label:"Odaklanma",e:"🎯",txt:"Zihnini toplayamıyor musun?",grad:"linear-gradient(135deg,#1a237e,#283593)"},
+  {label:"Ebeveynler",e:"👨‍👩‍👧",txt:"Sabrının tükendiğini hissettiğinde derin bir mola ver",grad:"linear-gradient(135deg,#006064,#00838f)"}
+];
+
+function renderSOS(){
+  const grid=document.getElementById('sosGrid');
+  grid.innerHTML=sosCats.map((c,i)=>{
+    const id=`sg${i}`;
+    return `
+    <div class="sos-item" onclick="alert('${c.name} açılacak')">
+      <div class="sos-btn-circle">
+        <svg viewBox="0 0 100 100" style="position:absolute;inset:0;width:100%;height:100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sr${id}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#d8d8d8"/><stop offset="30%" stop-color="#a0a0a0"/>
+              <stop offset="50%" stop-color="#c8c8c8"/><stop offset="70%" stop-color="#909090"/>
+              <stop offset="100%" stop-color="#b8b8b8"/>
+            </linearGradient>
+            <radialGradient id="sc${id}" cx=".4" cy=".35" r=".65">
+              <stop offset="0%" stop-color="${c.color}" stop-opacity=".95"/>
+              <stop offset="80%" stop-color="${c.color}"/>
+              <stop offset="100%" stop-color="${c.color}" stop-opacity=".7"/>
+            </radialGradient>
+            <radialGradient id="sh${id}" cx=".45" cy=".3" r=".4">
+              <stop offset="0%" stop-color="rgba(255,255,255,.2)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="48" fill="url(#sr${id})"/>
+          <circle cx="50" cy="50" r="43" fill="url(#sc${id})"/>
+          <circle cx="50" cy="50" r="43" fill="url(#sh${id})"/>
+        </svg>
+        <span>${c.name.toLocaleUpperCase('tr')}</span>
+      </div>
+      <div class="sos-item-desc">${c.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function openSOS(){
+  closeSearch();closeStres();closeUyku();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  renderSOS();
+  const p=document.getElementById('sosPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+  setNav('navSOS');
+}
+function closeSOS(){
+  const p=document.getElementById('sosPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+
+// ARAMA SAYFASI
+function renderSearch(){
+  // Kategori etiketleri (catActions varsa ona yönlendir)
+  document.getElementById('searchCats').innerHTML=cats.map(c=>{
+    const action=catActions[c.k]?`closeSearch();${catActions[c.k].replace('()','(\'search\')')}`:`alert('${c.n}')`;
+    return `<div class="search-cat" onclick="${action}">${c.n}</div>`;
+  }).join('');
+  // Keşfet satırları
+  // Keşfet kartları için label→action eşlemesi
+  const exploreActions={"Uyku":"closeSearch();openUyku('search')","Stres":"closeSearch();openStres('search')","İlişkiler":"closeSearch();openIliski('search')","Bolluk":"closeSearch();openBolluk('search')","Kilo Verme":"closeSearch();openKilo('search')","Bağımlılıklar":"closeSearch();openBagim('search')","Odaklanma":"closeSearch();openOgrenci('search')","Ebeveynler":"closeSearch();openEbeveyn('search')"};
+  function renderExploreRow(data){
+    return data.map(c=>{
+      const action=exploreActions[c.label]||`alert('${c.label} açılacak')`;
+      return `<div class="explore-card" onclick="${action}"><div class="explore-vis" style="background:${c.grad}"><div class="explore-label">${c.label.toLocaleUpperCase('tr')}</div><div class="explore-emoji">${c.e}</div></div><div class="explore-txt">${c.txt}</div></div>`;
+    }).join('');
+  }
+  document.getElementById('exploreRow1').innerHTML=renderExploreRow(exploreRow1);
+  document.getElementById('exploreRow2').innerHTML=renderExploreRow(exploreRow2);
+  // Scroll fix: display:none'dan gelen elemanların scroll genişliği geç hesaplanır
+  setTimeout(()=>{
+    document.getElementById('exploreRow1').scrollLeft=0;
+    document.getElementById('exploreRow2').scrollLeft=0;
+  },50);
+}
+function openSearch(){
+  closeSOS();closeStres();closeUyku();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  const p=document.getElementById('searchPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>{
+    p.classList.add('show');
+    renderSearch();
+  });
+  setNav('navSearch');
+}
+function closeSearch(){
+  const p=document.getElementById('searchPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function setNav(id){
+  document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function goHome(){
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();setNav('navHome');
+}
+
+// ========== UYKU KATEGORİ SAYFASI ==========
+const uykuTabs=["Rehberlik","Hikâyeler","Sesler","Diğer Araçlar"];
+// Rehberlik içerikleri (düzenlemek/eklemek için bu diziyi değiştirin)
+const uykuRehberlik=[
+  {dur:"25 dk",title:"Uykuya Rahat Geçiş",author:"Yusuf",grad:"linear-gradient(135deg,#0f1832,#1a2855)"},
+  {dur:"6 dk",title:"Kabusla Uyandıysan",author:"Defne",grad:"linear-gradient(135deg,#1a1040,#2a1860)"},
+  {dur:"15 dk",title:"Derin Bir Uyku",author:"Cem",grad:"linear-gradient(135deg,#0a1628,#162848)"},
+  {dur:"7 dk",title:"Gece Yarısı Uyandıysan",author:"Batuhan",grad:"linear-gradient(135deg,#141030,#221850)"}
+];
+// Hikâyeler (placeholder - sonra eklenecek)
+const uykuHikayeler=[
+  {dur:"20 dk",title:"Yağmurun Sesi",author:"Elif",grad:"linear-gradient(135deg,#1a2040,#283060)"},
+  {dur:"30 dk",title:"Orman Yolu",author:"Ahmet",grad:"linear-gradient(135deg,#0a1828,#182838)"},
+  {dur:"25 dk",title:"Deniz Feneri",author:"Zeynep",grad:"linear-gradient(135deg,#101838,#1e2a50)"}
+];
+// Sesler (placeholder)
+const uykuSesler=[
+  {dur:"60 dk",title:"Yağmur ve Gök Gürültüsü",author:"",grad:"linear-gradient(135deg,#1a1a2e,#2a2a48)"},
+  {dur:"45 dk",title:"Okyanus Dalgaları",author:"",grad:"linear-gradient(135deg,#0a1828,#1a2848)"},
+  {dur:"30 dk",title:"Şömine Ateşi",author:"",grad:"linear-gradient(135deg,#2a1810,#3a2820)"}
+];
+// Diğer (placeholder)
+const uykuDiger=[
+  {dur:"10 dk",title:"Uyku Öncesi Nefes",author:"Defne",grad:"linear-gradient(135deg,#141428,#242448)"},
+  {dur:"15 dk",title:"Vücut Taraması",author:"Cem",grad:"linear-gradient(135deg,#0e1830,#1e2850)"}
+];
+const uykuAllContent=[uykuRehberlik,uykuHikayeler,uykuSesler,uykuDiger];
+let uykuActiveTab=0;
+let uykuCameFrom=null; // 'search' veya null (home)
+
+// Yıldızlı gökyüzü oluştur
+function createStars(){
+  const c=document.getElementById('uykuStars');
+  if(c.children.length>0) return; // zaten oluşturulmuş
+  let h='';
+  for(let i=0;i<60;i++){
+    const x=Math.random()*100,y=Math.random()*100;
+    const s=Math.random()*2+1;
+    const cls=['twinkle','twinkle2','twinkle3'][Math.floor(Math.random()*3)];
+    h+=`<div class="uyku-star ${cls}" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${Math.random()*.5+.3}"></div>`;
+  }
+  c.innerHTML=h;
+}
+
+// Kart içindeki sahne çizimi (yatak, yastık, ay vb.)
+function uykuScene(idx){
+  const scenes=[
+    // Yatak + yastık + ay
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="170" cy="40" r="20" fill="#e8e0c0" opacity=".15"/>
+      <path d="M175,40 C168,40 165,35 168,30 C162,32 160,40 168,44 C176,48 180,42 175,40Z" fill="#e8e0c0" opacity=".2"/>
+      <ellipse cx="110" cy="155" rx="80" ry="8" fill="rgba(255,255,255,.04)"/>
+      <rect x="50" y="120" width="120" height="35" rx="4" fill="rgba(200,210,240,.08)" stroke="rgba(200,210,240,.1)" stroke-width="1"/>
+      <rect x="60" y="112" width="40" height="18" rx="8" fill="rgba(200,210,240,.1)"/>
+      <rect x="108" y="114" width="35" height="16" rx="7" fill="rgba(200,210,240,.08)"/>
+      <path d="M50,152 Q110,162 170,152" fill="none" stroke="rgba(200,210,240,.06)" stroke-width="1"/>
+    </svg>`,
+    // Bulutlar + ay
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="22" fill="#c0c8e0" opacity=".1"/>
+      <path d="M55,50 C48,50 44,44 48,38 C42,40 40,50 48,54 C56,58 60,52 55,50Z" fill="#c0c8e0" opacity=".15"/>
+      <ellipse cx="140" cy="90" rx="40" ry="16" fill="rgba(255,255,255,.04)"/>
+      <ellipse cx="120" cy="88" rx="20" ry="14" fill="rgba(255,255,255,.05)"/>
+      <ellipse cx="80" cy="130" rx="35" ry="14" fill="rgba(255,255,255,.03)"/>
+    </svg>`,
+    // Derin uzay + yıldızlar
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="100" r="60" fill="rgba(100,120,200,.04)"/>
+      <circle cx="110" cy="100" r="40" fill="rgba(100,120,200,.06)"/>
+      <circle cx="110" cy="100" r="20" fill="rgba(140,160,220,.08)"/>
+      <circle cx="60" cy="40" r="1.5" fill="white" opacity=".5"/><circle cx="160" cy="60" r="1" fill="white" opacity=".4"/>
+      <circle cx="40" cy="120" r="1.5" fill="white" opacity=".3"/><circle cx="180" cy="140" r="1" fill="white" opacity=".5"/>
+    </svg>`,
+    // Pencere + perde + ay
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="60" y="30" width="100" height="130" rx="3" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.08)" stroke-width="1.5"/>
+      <line x1="110" y1="30" x2="110" y2="160" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <line x1="60" y1="95" x2="160" y2="95" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <circle cx="130" cy="60" r="14" fill="#e8e0c0" opacity=".1"/>
+      <path d="M55,30 Q50,80 58,160" fill="none" stroke="rgba(200,200,240,.06)" stroke-width="8"/>
+      <path d="M165,30 Q170,80 162,160" fill="none" stroke="rgba(200,200,240,.06)" stroke-width="8"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderUykuTabs(){
+  document.getElementById('uykuTabs').innerHTML=uykuTabs.map((t,i)=>
+    `<div class="uyku-tab ${i===uykuActiveTab?'on':''}" onclick="switchUykuTab(${i})">${t}</div>`
+  ).join('');
+}
+
+function renderUykuSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="uykuSec${idx}">${title}<span class="uyku-sec-right" onclick="switchUykuTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${uykuScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          ${item.author?`<div class="uyku-card-author">${item.author}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderUykuContent(){
+  let h='';
+  // Tüm sekmeleri alt alta göster
+  uykuTabs.forEach((tab,i)=>{
+    h+=renderUykuSection(uykuAllContent[i],tab,i);
+  });
+  document.getElementById('uykuScroll').innerHTML=h;
+}
+
+function switchUykuTab(i){
+  uykuActiveTab=i;
+  renderUykuTabs();
+  // İlgili bölüme kaydır
+  const sec=document.getElementById('uykuSec'+i);
+  if(sec){
+    sec.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+function openUyku(from){
+  uykuCameFrom=from||null;
+  closeSOS();closeSearch();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  createStars();
+  uykuActiveTab=0;
+  renderUykuTabs();
+  renderUykuContent();
+  const p=document.getElementById('uykuPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeUyku(){
+  const p=document.getElementById('uykuPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function uykuBack(){
+  closeUyku();
+  if(uykuCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ========== STRES/ANKSİYETE KATEGORİ SAYFASI ==========
+const stresTabs_=["Kalıcı Denge","Acil Destek","Özel Durumlar","Programlar"];
+const stresKalici=[
+  {dur:"12 dk",title:"Günlük Stres Yönetimi",author:"Yusuf",grad:"linear-gradient(135deg,#2a1040,#3a1860)"},
+  {dur:"18 dk",title:"Kaygıyı Kökünden Çöz",author:"Aslı",grad:"linear-gradient(135deg,#1a1838,#2a2858)"},
+  {dur:"15 dk",title:"İç Huzur Çalışması",author:"Defne",grad:"linear-gradient(135deg,#201030,#301848)"}
+];
+const stresAcil=[
+  {dur:"5 dk",title:"Şimdi Dur",author:"Peker",grad:"linear-gradient(135deg,#3a1020,#4a1830)"},
+  {dur:"6,5 dk",title:"Panik Anında Yardım",author:"Aslı",grad:"linear-gradient(135deg,#2a0828,#3a1040)"},
+  {dur:"8 dk",title:"Anksiyete Anında Dinle",author:"Yasemin",grad:"linear-gradient(135deg,#1e1030,#2e1848)"},
+  {dur:"9,5 dk",title:"İçindeki Gürültüyü Durdur",author:"Ali",grad:"linear-gradient(135deg,#281038,#381850)"}
+];
+const stresOzel=[
+  {dur:"14 dk",title:"Finansal Kaygılar",author:"Peker",grad:"linear-gradient(135deg,#2a2010,#3a3020)"},
+  {dur:"11 dk",title:"Sınav Stresi",author:"Cem",grad:"linear-gradient(135deg,#1a1040,#2a1860)"},
+  {dur:"16 dk",title:"Ebeveynlik Dertleri",author:"Elif",grad:"linear-gradient(135deg,#102030,#1a3048)"},
+  {dur:"10 dk",title:"Uçak Korkusu",author:"Batuhan",grad:"linear-gradient(135deg,#0e1838,#1e2850)"},
+  {dur:"13 dk",title:"İş Sıkıntıları",author:"Yasemin",grad:"linear-gradient(135deg,#201828,#302840)"}
+];
+const stresProgramlar=[
+  {dur:"7 gün",title:"Kaygıya Son Programı",author:"Aslı",grad:"linear-gradient(135deg,#2a1040,#3a1860)"},
+  {dur:"5 gün",title:"Stressiz Yaşam",author:"Ali",grad:"linear-gradient(135deg,#1e1030,#2e1848)"},
+  {dur:"10 gün",title:"Zihin Berraklığı",author:"Defne",grad:"linear-gradient(135deg,#181838,#282858)"}
+];
+const stresAllContent=[stresKalici,stresAcil,stresOzel,stresProgramlar];
+let stresActiveTab=0;
+let stresCameFrom=null;
+
+function stresScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="100" r="50" fill="rgba(124,77,255,.06)"/>
+      <circle cx="110" cy="100" r="30" fill="rgba(124,77,255,.1)"/>
+      <path d="M80,120 Q110,80 140,120" fill="none" stroke="rgba(200,180,255,.1)" stroke-width="2"/>
+      <path d="M70,130 Q110,90 150,130" fill="none" stroke="rgba(200,180,255,.06)" stroke-width="1.5"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30,140 Q70,60 110,100 Q150,140 190,80" fill="none" stroke="rgba(224,64,251,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M40,150 Q80,70 120,110 Q160,150 200,90" fill="none" stroke="rgba(224,64,251,.06)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="60" cy="50" r="1.5" fill="rgba(255,255,255,.3)"/>
+      <circle cx="170" cy="40" r="1" fill="rgba(255,255,255,.2)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="110" cy="100" rx="70" ry="50" fill="rgba(68,138,255,.04)"/>
+      <ellipse cx="110" cy="100" rx="45" ry="32" fill="rgba(68,138,255,.07)"/>
+      <ellipse cx="110" cy="100" rx="20" ry="14" fill="rgba(68,138,255,.1)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60,160 Q80,100 110,120 Q140,140 160,70" fill="none" stroke="rgba(180,140,255,.08)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="80" cy="60" r="20" fill="rgba(124,77,255,.05)"/>
+      <circle cx="160" cy="140" r="15" fill="rgba(224,64,251,.05)"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderStresTabs(){
+  document.getElementById('stresTabs').innerHTML=stresTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===stresActiveTab?'on':''}" onclick="switchStresTab(${i})">${t}</div>`
+  ).join('');
+}
+
+function renderStresSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="stresSec${idx}">${title}<span class="uyku-sec-right" onclick="switchStresTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${stresScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          ${item.author?`<div class="uyku-card-author">${item.author}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderStresContent(){
+  let h='';
+  stresTabs_.forEach((tab,i)=>{
+    h+=renderStresSection(stresAllContent[i],tab,i);
+  });
+  document.getElementById('stresScroll').innerHTML=h;
+}
+
+function switchStresTab(i){
+  stresActiveTab=i;
+  renderStresTabs();
+  const sec=document.getElementById('stresSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openStres(from){
+  stresCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  stresActiveTab=0;
+  renderStresTabs();
+  renderStresContent();
+  const p=document.getElementById('stresPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeStres(){
+  const p=document.getElementById('stresPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function stresBack(){
+  closeStres();
+  if(stresCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ========== İLİŞKİLER KATEGORİ SAYFASI ==========
+const iliskiTabs_=["Sağlıklı Bağlar","Duygusal Fren","Zehirli İlişkiler","Onarım ve Yas"];
+const iliskiSaglikli=[
+  {dur:"14 dk",title:"Sevgiyi Taze Tut",author:"Sena",grad:"linear-gradient(135deg,#2a1020,#3a1838)"},
+  {dur:"18 dk",title:"Sarsılmaz Güven",author:"Peker",grad:"linear-gradient(135deg,#1e0c20,#2e1438)"},
+  {dur:"12 dk",title:"Göz Göze Diz Dize",author:"Elif",grad:"linear-gradient(135deg,#281028,#381840)"},
+  {dur:"20 dk",title:"Sağlıklı Cinsel Hayat",author:"Yasemin",grad:"linear-gradient(135deg,#201020,#301838)"},
+  {dur:"10 dk",title:"İlişkinin Kıvılcımını Koru",author:"Ali",grad:"linear-gradient(135deg,#220e28,#321640)"},
+  {dur:"16 dk",title:"İstediğin İlişkiyi Çek",author:"Defne",grad:"linear-gradient(135deg,#1a0c1e,#2a1436)"}
+];
+const iliskiFren=[
+  {dur:"5 dk",title:"O Mesajı Atma",author:"Sena",grad:"linear-gradient(135deg,#3a1020,#4a1830)"},
+  {dur:"7 dk",title:"Kıskançlık Krizi",author:"Peker",grad:"linear-gradient(135deg,#2e0e28,#3e1640)"},
+  {dur:"8 dk",title:"Ayrılığın İlk Günü",author:"Elif",grad:"linear-gradient(135deg,#281030,#381848)"}
+];
+const iliskiZehirli=[
+  {dur:"15 dk",title:"Toksik Bağlardan Kurtul",author:"Yasemin",grad:"linear-gradient(135deg,#201020,#301838)"},
+  {dur:"12 dk",title:"Sınırını Koru",author:"Ali",grad:"linear-gradient(135deg,#2a0e28,#3a1640)"},
+  {dur:"18 dk",title:"Narsiste Bağımlı Olma",author:"Sena",grad:"linear-gradient(135deg,#1e0c22,#2e143a)"}
+];
+const iliskiOnarim=[
+  {dur:"8 dk",title:"Ayrılığın İlk Günü",author:"Elif",grad:"linear-gradient(135deg,#3a1020,#4a1830)"},
+  {dur:"20 dk",title:"Sağlıklı Yas",author:"Defne",grad:"linear-gradient(135deg,#201028,#301840)"},
+  {dur:"16 dk",title:"Yaraları Sar ve Kendine Dön",author:"Peker",grad:"linear-gradient(135deg,#281030,#381848)"},
+  {dur:"14 dk",title:"Yeni Bir Hikâye",author:"Yasemin",grad:"linear-gradient(135deg,#1e0e24,#2e163c)"}
+];
+const iliskiAllContent=[iliskiSaglikli,iliskiFren,iliskiZehirli,iliskiOnarim];
+let iliskiActiveTab=0;
+let iliskiCameFrom=null;
+
+function iliskiScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M110,60 C110,40 90,30 75,42 C60,54 60,78 75,92 L110,125 L145,92 C160,78 160,54 145,42 C130,30 110,40 110,60Z" fill="rgba(224,64,160,.06)" stroke="rgba(224,64,160,.12)" stroke-width="1"/>
+      <circle cx="70" cy="50" r="1" fill="rgba(255,255,255,.25)"/>
+      <circle cx="150" cy="70" r="1.5" fill="rgba(255,255,255,.2)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="85" cy="90" r="35" fill="rgba(192,96,160,.05)" stroke="rgba(192,96,160,.1)" stroke-width="1"/>
+      <circle cx="135" cy="90" r="35" fill="rgba(160,96,192,.05)" stroke="rgba(160,96,192,.1)" stroke-width="1"/>
+      <path d="M110,65 L110,115" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40,100 Q80,40 110,100 Q140,160 180,100" fill="none" stroke="rgba(200,120,180,.1)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M50,110 Q85,55 115,110 Q145,165 175,110" fill="none" stroke="rgba(200,120,180,.06)" stroke-width="1.5"/>
+      <circle cx="110" cy="100" r="4" fill="rgba(224,64,160,.1)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="100" r="55" fill="rgba(180,100,160,.04)"/>
+      <circle cx="110" cy="100" r="35" fill="rgba(180,100,160,.06)"/>
+      <circle cx="110" cy="100" r="15" fill="rgba(180,100,160,.08)"/>
+      <circle cx="80" cy="60" r="1.5" fill="rgba(255,255,255,.2)"/>
+      <circle cx="145" cy="130" r="1" fill="rgba(255,255,255,.15)"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderIliskiTabs(){
+  document.getElementById('iliskiTabs').innerHTML=iliskiTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===iliskiActiveTab?'on':''}" onclick="switchIliskiTab(${i})">${t}</div>`
+  ).join('');
+}
+
+function renderIliskiSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="iliskiSec${idx}">${title}<span class="uyku-sec-right" onclick="switchIliskiTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${iliskiScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          ${item.author?`<div class="uyku-card-author">${item.author}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderIliskiContent(){
+  let h='';
+  iliskiTabs_.forEach((tab,i)=>{
+    h+=renderIliskiSection(iliskiAllContent[i],tab,i);
+  });
+  document.getElementById('iliskiScroll').innerHTML=h;
+}
+
+function switchIliskiTab(i){
+  iliskiActiveTab=i;
+  renderIliskiTabs();
+  const sec=document.getElementById('iliskiSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openIliski(from){
+  iliskiCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  iliskiActiveTab=0;
+  renderIliskiTabs();
+  renderIliskiContent();
+  const p=document.getElementById('iliskiPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeIliski(){
+  const p=document.getElementById('iliskiPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function iliskiBack(){
+  closeIliski();
+  if(iliskiCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ========== BOLLUK BEREKET KATEGORİ SAYFASI ==========
+const bollukTabs_=["Maddi Denge","Bolluk Bilinci","Öz Değer","Görünmez Engeller"];
+const bollukMaddi=[
+  {dur:"12 dk",title:"Belirsizlik Zamanları",author:"Peker",grad:"linear-gradient(135deg,#8a7a20,#a89428)"},
+  {dur:"16 dk",title:"Fırsatları Gör",author:"Yasemin",grad:"linear-gradient(135deg,#9a8824,#b49c2c)"},
+  {dur:"10 dk",title:"Faturalarla Yüzleş",author:"Ali",grad:"linear-gradient(135deg,#80721e,#9a8a26)"}
+];
+const bollukBilinc=[
+  {dur:"15 dk",title:"Bolluğu Çek",author:"Yasemin",grad:"linear-gradient(135deg,#8e7e22,#a8962a)"},
+  {dur:"20 dk",title:"Uyurken Bereketi Çağır",author:"Cem",grad:"linear-gradient(135deg,#9c8a26,#b69e2e)"},
+  {dur:"15 dk",title:"Refahı Kabullenme - Olumlamalar",author:"Cem",grad:"linear-gradient(135deg,#8a7a20,#a49228)"},
+  {dur:"18 dk",title:"Kıtlık Bilincini Kır",author:"Defne",grad:"linear-gradient(135deg,#948224,#ae9a2c)"}
+];
+const bollukOzdeger=[
+  {dur:"14 dk",title:"Emeğine ve Değerine Sahip Çık",author:"Sena",grad:"linear-gradient(135deg,#8c7c22,#a6942a)"},
+  {dur:"12 dk",title:"\"Bunu Hak Ediyorum\" Pratiği",author:"Elif",grad:"linear-gradient(135deg,#84741e,#9e8c26)"}
+];
+const bollukEngeller=[
+  {dur:"11 dk",title:"Finansal Kaygıdan Kurtul",author:"Peker",grad:"linear-gradient(135deg,#8a7a20,#a49228)"},
+  {dur:"7 gün",title:"Kıtlık Bilincine Veda",author:"Yasemin",grad:"linear-gradient(135deg,#968424,#b09c2c)"},
+  {dur:"16 dk",title:"Para Blokajı Temizliği",author:"Ali",grad:"linear-gradient(135deg,#8e7e22,#a8962a)"}
+];
+const bollukAllContent=[bollukMaddi,bollukBilinc,bollukOzdeger,bollukEngeller];
+let bollukActiveTab=0;
+let bollukCameFrom=null;
+
+function bollukScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="45" fill="rgba(196,160,40,.04)" stroke="rgba(196,160,40,.1)" stroke-width="1"/>
+      <circle cx="110" cy="90" r="25" fill="rgba(196,160,40,.06)"/>
+      <path d="M95,85 L110,65 L125,85" fill="none" stroke="rgba(196,160,40,.15)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="110" y1="65" x2="110" y2="110" stroke="rgba(196,160,40,.1)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60,150 Q80,60 110,100 Q140,140 160,50" fill="none" stroke="rgba(106,128,48,.12)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="160" cy="50" r="8" fill="rgba(196,160,40,.08)"/>
+      <circle cx="80" cy="130" r="1.5" fill="rgba(255,255,255,.2)"/>
+      <circle cx="150" cy="80" r="1" fill="rgba(255,255,255,.15)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="110" cy="100" rx="60" ry="40" fill="rgba(106,128,48,.04)"/>
+      <path d="M70,100 Q90,70 110,80 Q130,90 150,60" fill="none" stroke="rgba(160,128,32,.08)" stroke-width="2"/>
+      <path d="M80,120 Q100,90 120,100 Q140,110 160,80" fill="none" stroke="rgba(160,128,32,.06)" stroke-width="1.5"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="80" y="60" width="60" height="80" rx="4" fill="rgba(160,128,32,.04)" stroke="rgba(160,128,32,.08)" stroke-width="1"/>
+      <line x1="90" y1="80" x2="130" y2="80" stroke="rgba(160,128,32,.1)" stroke-width="1"/>
+      <line x1="90" y1="95" x2="130" y2="95" stroke="rgba(160,128,32,.08)" stroke-width="1"/>
+      <line x1="90" y1="110" x2="120" y2="110" stroke="rgba(160,128,32,.06)" stroke-width="1"/>
+      <circle cx="110" cy="45" r="12" fill="rgba(196,160,40,.06)"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderBollukTabs(){
+  document.getElementById('bollukTabs').innerHTML=bollukTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===bollukActiveTab?'on':''}" onclick="switchBollukTab(${i})">${t}</div>`
+  ).join('');
+}
+
+function renderBollukSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="bollukSec${idx}">${title}<span class="uyku-sec-right" onclick="switchBollukTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${bollukScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          ${item.author?`<div class="uyku-card-author">${item.author}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderBollukContent(){
+  let h='';
+  bollukTabs_.forEach((tab,i)=>{
+    h+=renderBollukSection(bollukAllContent[i],tab,i);
+  });
+  document.getElementById('bollukScroll').innerHTML=h;
+}
+
+function switchBollukTab(i){
+  bollukActiveTab=i;
+  renderBollukTabs();
+  const sec=document.getElementById('bollukSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openBolluk(from){
+  bollukCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  bollukActiveTab=0;
+  renderBollukTabs();
+  renderBollukContent();
+  const p=document.getElementById('bollukPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeBolluk(){
+  const p=document.getElementById('bollukPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function bollukBack(){
+  closeBolluk();
+  if(bollukCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ========== EBEVEYNLİK KATEGORİ SAYFASI ==========
+const ebeveynTabs_=["Güvenli Bağ","Sabır Sınırı"];
+const ebeveynBag=[
+  {dur:"14 dk",title:"Suçluluk Hissine Veda",author:"Elif",grad:"linear-gradient(135deg,#142838,#1e3848)"},
+  {dur:"12 dk",title:"Kendi Alanını Hatırla",author:"Yasemin",grad:"linear-gradient(135deg,#182c3a,#223c4a)"},
+  {dur:"16 dk",title:"Mükemmellik Baskısından Kurtul",author:"Defne",grad:"linear-gradient(135deg,#162a36,#203a48)"}
+];
+const ebeveynSabir=[
+  {dur:"6 dk",title:"Sabrın Taştığında",author:"Defne",grad:"linear-gradient(135deg,#1a2e3c,#243e4c)"},
+  {dur:"10 dk",title:"Tahammül Kasını Güçlendir",author:"Ali",grad:"linear-gradient(135deg,#142838,#1e3848)"}
+];
+const ebeveynAllContent=[ebeveynBag,ebeveynSabir];
+let ebeveynActiveTab=0;
+let ebeveynCameFrom=null;
+
+function ebeveynScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="90" cy="80" r="20" fill="rgba(80,184,208,.06)" stroke="rgba(80,184,208,.1)" stroke-width="1"/>
+      <circle cx="130" cy="90" r="14" fill="rgba(112,200,160,.06)" stroke="rgba(112,200,160,.1)" stroke-width="1"/>
+      <path d="M95,95 Q110,110 125,100" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60,130 Q110,50 160,130" fill="none" stroke="rgba(80,184,208,.08)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="110" cy="80" r="25" fill="rgba(96,160,208,.05)"/>
+      <circle cx="110" cy="80" r="12" fill="rgba(96,160,208,.07)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="110" cy="100" rx="50" ry="35" fill="rgba(112,200,160,.04)" stroke="rgba(112,200,160,.08)" stroke-width="1"/>
+      <circle cx="95" cy="90" r="6" fill="rgba(80,184,208,.08)"/>
+      <circle cx="125" cy="95" r="4" fill="rgba(112,200,160,.08)"/>
+      <path d="M90,105 Q110,115 130,105" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderEbeveynTabs(){
+  document.getElementById('ebeveynTabs').innerHTML=ebeveynTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===ebeveynActiveTab?'on':''}" onclick="switchEbeveynTab(${i})">${t}</div>`
+  ).join('');
+}
+
+function renderEbeveynSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="ebeveynSec${idx}">${title}<span class="uyku-sec-right" onclick="switchEbeveynTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${ebeveynScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          ${item.author?`<div class="uyku-card-author">${item.author}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderEbeveynContent(){
+  let h='';
+  ebeveynTabs_.forEach((tab,i)=>{
+    h+=renderEbeveynSection(ebeveynAllContent[i],tab,i);
+  });
+  document.getElementById('ebeveynScroll').innerHTML=h;
+}
+
+function switchEbeveynTab(i){
+  ebeveynActiveTab=i;
+  renderEbeveynTabs();
+  const sec=document.getElementById('ebeveynSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openEbeveyn(from){
+  ebeveynCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  ebeveynActiveTab=0;
+  renderEbeveynTabs();
+  renderEbeveynContent();
+  const p=document.getElementById('ebeveynPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeEbeveyn(){
+  const p=document.getElementById('ebeveynPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function ebeveynBack(){
+  closeEbeveyn();
+  if(ebeveynCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ========== BAĞIMLILIKLAR KATEGORİ SAYFASI ==========
+// ===== ÖZ SAYGI / ÖZ SEVGİ =====
+const ozsaygiTabs_=["İçindeki Yargıç","Sınırlar","Öz Değer"];
+const ozsaygiYargic=[
+  {dur:"12 dk",title:"İç Eleştirmeni Sustur",author:"Defne",grad:"linear-gradient(135deg,#241614,#342420)"},
+  {dur:"15 dk",title:"Yargıç Değil Şahit Ol",author:"Elif",grad:"linear-gradient(135deg,#2a1a18,#3a2a26)"}
+];
+const ozsaygiSinirlar=[
+  {dur:"10 dk",title:"Hayır Demeyi Öğren",author:"Adem",grad:"linear-gradient(135deg,#241614,#342420)"},
+  {dur:"14 dk",title:"Sınırlarını Koru",author:"Özge",grad:"linear-gradient(135deg,#2a1a18,#3a2a26)"}
+];
+const ozsaygiDeger=[
+  {dur:"18 dk",title:"Sen Yeterlisin",author:"Peker",grad:"linear-gradient(135deg,#241614,#342420)"},
+  {dur:"12 dk",title:"Değerini Hatırla",author:"Yasemin",grad:"linear-gradient(135deg,#2a1a18,#3a2a26)"}
+];
+const ozsaygiAllContent=[ozsaygiYargic,ozsaygiSinirlar,ozsaygiDeger];
+let ozsaygiActiveTab=0;
+let ozsaygiCameFrom=null;
+
+function ozsaygiScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="95" r="45" fill="rgba(208,136,112,.04)" stroke="rgba(208,136,112,.08)" stroke-width="1.5"/>
+      <path d="M95,85 Q110,70 125,85" fill="none" stroke="rgba(208,136,112,.12)" stroke-width="2" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M80,130 Q100,60 120,100 Q140,140 160,70" fill="none" stroke="rgba(224,160,144,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="110" cy="100" r="8" fill="rgba(208,136,112,.06)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="38" fill="rgba(208,136,112,.03)"/>
+      <path d="M100,80 Q110,65 120,80" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M95,110 Q110,125 125,110" fill="none" stroke="rgba(208,136,112,.1)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="90" cy="90" r="25" fill="rgba(208,136,112,.04)" stroke="rgba(208,136,112,.08)" stroke-width="1"/>
+      <circle cx="130" cy="90" r="25" fill="rgba(224,160,144,.04)" stroke="rgba(224,160,144,.08)" stroke-width="1"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderOzsaygiTabs(){
+  document.getElementById('ozsaygiTabs').innerHTML=ozsaygiTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===ozsaygiActiveTab?'on':''}" onclick="switchOzsaygiTab(${i})">${t}</div>`
+  ).join('');
+}
+function renderOzsaygiSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="ozsaygiSec${idx}">${title}<span class="uyku-sec-right" onclick="switchOzsaygiTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${ozsaygiScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          <div class="uyku-card-author">${item.author}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function renderOzsaygiContent(){
+  let h='';
+  ozsaygiTabs_.forEach((tab,i)=>{
+    h+=renderOzsaygiSection(ozsaygiAllContent[i],tab,i);
+  });
+  document.getElementById('ozsaygiScroll').innerHTML=h;
+}
+function switchOzsaygiTab(i){
+  ozsaygiActiveTab=i;
+  renderOzsaygiTabs();
+  const sec=document.getElementById('ozsaygiSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openOzsaygi(from){
+  ozsaygiCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeSaglik();closeYas();closeEvcil();
+  ozsaygiActiveTab=0;
+  renderOzsaygiTabs();
+  renderOzsaygiContent();
+  const p=document.getElementById('ozsaygiPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeOzsaygi(){
+  const p=document.getElementById('ozsaygiPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function ozsaygiBack(){
+  closeOzsaygi();
+  if(ozsaygiCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== SAĞLIK =====
+const saglikTabs_=["Stres","Bağışıklık","Onarım","Canlılık"];
+const saglikStres=[
+  {dur:"15 dk",title:"Bedensel Stres Atma",author:"Ali",grad:"linear-gradient(135deg,#102420,#1c3830)"},
+  {dur:"12 dk",title:"Somatik Gevşeme",author:"Cem",grad:"linear-gradient(135deg,#162e28,#223c34)"}
+];
+const saglikBagisiklik=[
+  {dur:"18 dk",title:"Bağışıklık Güçlendirme",author:"Elif",grad:"linear-gradient(135deg,#102420,#1c3830)"},
+  {dur:"14 dk",title:"Hücresel Koruma",author:"Ersen",grad:"linear-gradient(135deg,#162e28,#223c34)"}
+];
+const saglikOnarim=[
+  {dur:"20 dk",title:"Gece Onarım Çalışması",author:"Peker",grad:"linear-gradient(135deg,#102420,#1c3830)"},
+  {dur:"16 dk",title:"Derin İyileşme",author:"Defne",grad:"linear-gradient(135deg,#162e28,#223c34)"}
+];
+const saglikCanlilik=[
+  {dur:"10 dk",title:"Sabah Enerji Patlaması",author:"Adem",grad:"linear-gradient(135deg,#102420,#1c3830)"},
+  {dur:"15 dk",title:"Gün Boyu Canlılık",author:"Yasemin",grad:"linear-gradient(135deg,#162e28,#223c34)"}
+];
+const saglikAllContent=[saglikStres,saglikBagisiklik,saglikOnarim,saglikCanlilik];
+let saglikActiveTab=0;
+let saglikCameFrom=null;
+
+function saglikScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="100" r="50" fill="rgba(64,176,160,.04)" stroke="rgba(64,176,160,.1)" stroke-width="1.5"/>
+      <path d="M85,100 L95,100 L105,75 L115,125 L125,100 L135,100" fill="none" stroke="rgba(64,176,160,.12)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70,130 Q95,60 110,100 Q125,140 150,70" fill="none" stroke="rgba(80,192,176,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="110" cy="100" r="8" fill="rgba(64,176,160,.06)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="40" fill="rgba(96,208,192,.04)"/>
+      <circle cx="110" cy="90" r="22" fill="rgba(96,208,192,.06)"/>
+      <path d="M100,100 Q110,85 120,100" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="80" y="60" width="60" height="80" rx="8" fill="rgba(64,176,160,.04)" stroke="rgba(64,176,160,.08)" stroke-width="1"/>
+      <circle cx="110" cy="90" r="15" fill="rgba(64,176,160,.05)" stroke="rgba(64,176,160,.1)" stroke-width="1"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderSaglikTabs(){
+  document.getElementById('saglikTabs').innerHTML=saglikTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===saglikActiveTab?'on':''}" onclick="switchSaglikTab(${i})">${t}</div>`
+  ).join('');
+}
+function renderSaglikSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="saglikSec${idx}">${title}<span class="uyku-sec-right" onclick="switchSaglikTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${saglikScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          <div class="uyku-card-author">${item.author}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function renderSaglikContent(){
+  let h='';
+  saglikTabs_.forEach((tab,i)=>{
+    h+=renderSaglikSection(saglikAllContent[i],tab,i);
+  });
+  document.getElementById('saglikScroll').innerHTML=h;
+}
+function switchSaglikTab(i){
+  saglikActiveTab=i;
+  renderSaglikTabs();
+  const sec=document.getElementById('saglikSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openSaglik(from){
+  saglikCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeYas();closeEvcil();
+  saglikActiveTab=0;
+  renderSaglikTabs();
+  renderSaglikContent();
+  const p=document.getElementById('saglikPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeSaglik(){
+  const p=document.getElementById('saglikPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function saglikBack(){
+  closeSaglik();
+  if(saglikCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== YAS =====
+const yasItems=[
+  {dur:"18 dk",title:"Kaybın Acısını Kucakla",desc:"Kaybetmenin yarattığı acıyı bastırmadan hisset",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(128,160,184,.6)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M8 15s1.5-2 4-2 4 2 4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`},
+  {dur:"15 dk",title:"Vedanın Huzuru",desc:"Geride kalanla barış yapma çalışması",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(128,160,184,.6)" stroke-width="1.5" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>`},
+  {dur:"12 dk",title:"Hatıralarla Yaşamak",desc:"Sevdiklerini onurlandırarak ileriye bak",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(128,160,184,.6)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`},
+  {dur:"20 dk",title:"Yalnız Değilsin",desc:"Yas sürecinde şefkatli bir eşlik",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(128,160,184,.6)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`}
+];
+let yasCameFrom=null;
+
+function renderYasContent(){
+  let h='<div class="yas-grid">';
+  yasItems.forEach(item=>{
+    h+=`<div class="yas-card-item" onclick="onContentTap('${item.title}',false)">
+      <div class="yas-card-icon">${item.icon}</div>
+      <div class="yas-card-info">
+        <div class="yas-card-title">${item.title}</div>
+        <div class="yas-card-desc">${item.desc}</div>
+      </div>
+      <div class="yas-card-dur">${item.dur}</div>
+    </div>`;
+  });
+  h+='</div>';
+  document.getElementById('yasScroll').innerHTML=h;
+}
+function openYas(from){
+  yasCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeEvcil();
+  renderYasContent();
+  const p=document.getElementById('yasPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeYas(){
+  const p=document.getElementById('yasPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function yasBack(){
+  closeYas();
+  if(yasCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== EVCİL HAYVANLAR =====
+const evcilTabs_=["Sessiz Bağ","Neşe","Sağlık","Vedalar"];
+const evcilBag=[
+  {dur:"12 dk",title:"Evcil Hayvanınla Bağ Kur",author:"Elif",grad:"linear-gradient(135deg,#241e16,#342e22)"},
+  {dur:"10 dk",title:"Sessiz İletişim",author:"Defne",grad:"linear-gradient(135deg,#2a2418,#3a3428)"}
+];
+const evcilNese=[
+  {dur:"8 dk",title:"Birlikte Neşe",author:"Adem",grad:"linear-gradient(135deg,#241e16,#342e22)"},
+  {dur:"10 dk",title:"Oyun Zamanı Enerjisi",author:"Özge",grad:"linear-gradient(135deg,#2a2418,#3a3428)"}
+];
+const evcilSaglik=[
+  {dur:"15 dk",title:"Dostunun Sağlığını Destekle",author:"Ersen",grad:"linear-gradient(135deg,#241e16,#342e22)"},
+  {dur:"18 dk",title:"Sakinleştirici Frekanslar",author:"Ali",grad:"linear-gradient(135deg,#2a2418,#3a3428)"}
+];
+const evcilVedalar=[
+  {dur:"20 dk",title:"Tüylü Dostuna Veda",author:"Peker",grad:"linear-gradient(135deg,#241e16,#342e22)"},
+  {dur:"15 dk",title:"Kayıp Sonrası İyileşme",author:"Yasemin",grad:"linear-gradient(135deg,#2a2418,#3a3428)"}
+];
+const evcilAllContent=[evcilBag,evcilNese,evcilSaglik,evcilVedalar];
+let evcilActiveTab=0;
+let evcilCameFrom=null;
+
+function evcilScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="100" r="50" fill="rgba(200,160,80,.04)" stroke="rgba(200,160,80,.1)" stroke-width="1.5"/>
+      <ellipse cx="95" cy="85" rx="8" ry="10" fill="rgba(200,160,80,.06)"/>
+      <ellipse cx="125" cy="85" rx="8" ry="10" fill="rgba(200,160,80,.06)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70,120 Q90,70 110,100 Q130,130 150,80" fill="none" stroke="rgba(216,176,96,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="110" cy="100" r="8" fill="rgba(200,160,80,.06)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="40" fill="rgba(200,160,80,.04)"/>
+      <circle cx="100" cy="82" r="5" fill="rgba(200,160,80,.08)"/>
+      <circle cx="120" cy="82" r="5" fill="rgba(200,160,80,.08)"/>
+      <path d="M105,95 Q110,102 115,95" fill="none" stroke="rgba(200,160,80,.1)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="90" cy="80" rx="12" ry="14" fill="rgba(200,160,80,.04)" stroke="rgba(200,160,80,.08)" stroke-width="1"/>
+      <ellipse cx="130" cy="80" rx="12" ry="14" fill="rgba(216,176,96,.04)" stroke="rgba(216,176,96,.08)" stroke-width="1"/>
+      <ellipse cx="110" cy="110" rx="20" ry="18" fill="rgba(200,160,80,.05)" stroke="rgba(200,160,80,.08)" stroke-width="1"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderEvcilTabs(){
+  document.getElementById('evcilTabs').innerHTML=evcilTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===evcilActiveTab?'on':''}" onclick="switchEvcilTab(${i})">${t}</div>`
+  ).join('');
+}
+function renderEvcilSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="evcilSec${idx}">${title}<span class="uyku-sec-right" onclick="switchEvcilTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${evcilScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          <div class="uyku-card-author">${item.author}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function renderEvcilContent(){
+  let h='';
+  evcilTabs_.forEach((tab,i)=>{
+    h+=renderEvcilSection(evcilAllContent[i],tab,i);
+  });
+  document.getElementById('evcilScroll').innerHTML=h;
+}
+function switchEvcilTab(i){
+  evcilActiveTab=i;
+  renderEvcilTabs();
+  const sec=document.getElementById('evcilSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openEvcil(from){
+  evcilCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();
+  evcilActiveTab=0;
+  renderEvcilTabs();
+  renderEvcilContent();
+  const p=document.getElementById('evcilPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeEvcil(){
+  const p=document.getElementById('evcilPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function evcilBack(){
+  closeEvcil();
+  if(evcilCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== OLUMSUZ DUYGULAR =====
+const olumsuzTabs_=["Öfke","Melankoli","Ani Çöküş","Kıskançlık"];
+const olumsuzOfke=[
+  {dur:"10 dk",title:"Öfke Patlamasını Soğut",author:"Adem",grad:"linear-gradient(135deg,#2a1018,#3a1c28)"},
+  {dur:"14 dk",title:"Öfkenin Altındaki Acıyı Bul",author:"Defne",grad:"linear-gradient(135deg,#301420,#40202e)"}
+];
+const olumsuzMelankoli=[
+  {dur:"18 dk",title:"Karanlıkta Işık Bul",author:"Elif",grad:"linear-gradient(135deg,#2a1018,#3a1c28)"},
+  {dur:"12 dk",title:"Hüzünle Barış",author:"Yasemin",grad:"linear-gradient(135deg,#301420,#40202e)"}
+];
+const olumsuzCokus=[
+  {dur:"7 dk",title:"Çöküş Anında İlk Yardım",author:"Özge",grad:"linear-gradient(135deg,#2a1018,#3a1c28)"},
+  {dur:"15 dk",title:"Parçalanmış Hissediyorsan",author:"Peker",grad:"linear-gradient(135deg,#301420,#40202e)"}
+];
+const olumsuzKiskanc=[
+  {dur:"12 dk",title:"Kıskançlığın Kökeni",author:"Cem",grad:"linear-gradient(135deg,#2a1018,#3a1c28)"},
+  {dur:"10 dk",title:"Karşılaştırmayı Bırak",author:"Ali",grad:"linear-gradient(135deg,#301420,#40202e)"}
+];
+const olumsuzAllContent=[olumsuzOfke,olumsuzMelankoli,olumsuzCokus,olumsuzKiskanc];
+let olumsuzActiveTab=0;
+let olumsuzCameFrom=null;
+
+function olumsuzScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="95" r="45" fill="rgba(192,96,128,.04)" stroke="rgba(192,96,128,.08)" stroke-width="1.5"/>
+      <path d="M90,80 L110,100 L130,80" fill="none" stroke="rgba(192,96,128,.12)" stroke-width="2" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70,120 Q90,60 110,100 Q130,140 150,80" fill="none" stroke="rgba(208,112,144,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="110" cy="100" r="8" fill="rgba(192,96,128,.06)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="38" fill="rgba(192,96,128,.03)"/>
+      <path d="M85,95 Q110,70 135,95" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M95,110 Q110,130 125,110" fill="none" stroke="rgba(192,96,128,.1)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="90" cy="90" r="25" fill="rgba(192,96,128,.04)" stroke="rgba(192,96,128,.08)" stroke-width="1"/>
+      <circle cx="130" cy="90" r="25" fill="rgba(208,112,144,.04)" stroke="rgba(208,112,144,.08)" stroke-width="1"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderOlumsuzTabs(){
+  document.getElementById('olumsuzTabs').innerHTML=olumsuzTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===olumsuzActiveTab?'on':''}" onclick="switchOlumsuzTab(${i})">${t}</div>`
+  ).join('');
+}
+function renderOlumsuzSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="olumsuzSec${idx}">${title}<span class="uyku-sec-right" onclick="switchOlumsuzTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${olumsuzScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          <div class="uyku-card-author">${item.author}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function renderOlumsuzContent(){
+  let h='';
+  olumsuzTabs_.forEach((tab,i)=>{
+    h+=renderOlumsuzSection(olumsuzAllContent[i],tab,i);
+  });
+  document.getElementById('olumsuzScroll').innerHTML=h;
+}
+function switchOlumsuzTab(i){
+  olumsuzActiveTab=i;
+  renderOlumsuzTabs();
+  const sec=document.getElementById('olumsuzSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openOlumsuz(from){
+  olumsuzCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  olumsuzActiveTab=0;
+  renderOlumsuzTabs();
+  renderOlumsuzContent();
+  const p=document.getElementById('olumsuzPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeOlumsuz(){
+  const p=document.getElementById('olumsuzPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function olumsuzBack(){
+  closeOlumsuz();
+  if(olumsuzCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== ÖĞRENCİLER İÇİN =====
+const ogrenciTabs_=["Sınavlar","Odaklanma","Erteleme"];
+const ogrenciSinav=[
+  {dur:"15 dk",title:"Sınav Kaygısını Yen",author:"Ersen",grad:"linear-gradient(135deg,#181838,#222850)"},
+  {dur:"12 dk",title:"Sınav Öncesi Güven Çalışması",author:"Defne",grad:"linear-gradient(135deg,#1c1e42,#262c58)"}
+];
+const ogrenciOdak=[
+  {dur:"18 dk",title:"Lazer Odaklanma",author:"Ali",grad:"linear-gradient(135deg,#181838,#222850)"},
+  {dur:"10 dk",title:"Dikkat Dağınıklığına Son",author:"Elif",grad:"linear-gradient(135deg,#1c1e42,#262c58)"}
+];
+const ogrenciErteleme=[
+  {dur:"14 dk",title:"Erteleme Döngüsünü Kır",author:"Peker",grad:"linear-gradient(135deg,#181838,#222850)"},
+  {dur:"10 dk",title:"Şimdi Başla",author:"Adem",grad:"linear-gradient(135deg,#1c1e42,#262c58)"}
+];
+const ogrenciAllContent=[ogrenciSinav,ogrenciOdak,ogrenciErteleme];
+let ogrenciActiveTab=0;
+let ogrenciCameFrom=null;
+
+function ogrenciScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="80" y="60" width="60" height="80" rx="5" fill="rgba(96,112,208,.04)" stroke="rgba(96,112,208,.08)" stroke-width="1"/>
+      <line x1="92" y1="80" x2="128" y2="80" stroke="rgba(96,112,208,.1)" stroke-width="1"/>
+      <line x1="92" y1="95" x2="120" y2="95" stroke="rgba(96,112,208,.1)" stroke-width="1"/>
+      <line x1="92" y1="110" x2="124" y2="110" stroke="rgba(96,112,208,.1)" stroke-width="1"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="40" fill="rgba(128,144,224,.03)"/>
+      <circle cx="110" cy="90" r="20" fill="rgba(128,144,224,.05)"/>
+      <circle cx="110" cy="90" r="6" fill="rgba(128,144,224,.08)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M75,120 L95,70 L115,110 L135,65 L155,100" fill="none" stroke="rgba(96,112,208,.1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="135" cy="65" r="5" fill="rgba(96,112,208,.08)"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderOgrenciTabs(){
+  document.getElementById('ogrenciTabs').innerHTML=ogrenciTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===ogrenciActiveTab?'on':''}" onclick="switchOgrenciTab(${i})">${t}</div>`
+  ).join('');
+}
+function renderOgrenciSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="ogrenciSec${idx}">${title}<span class="uyku-sec-right" onclick="switchOgrenciTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${ogrenciScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          <div class="uyku-card-author">${item.author}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function renderOgrenciContent(){
+  let h='';
+  ogrenciTabs_.forEach((tab,i)=>{
+    h+=renderOgrenciSection(ogrenciAllContent[i],tab,i);
+  });
+  document.getElementById('ogrenciScroll').innerHTML=h;
+}
+function switchOgrenciTab(i){
+  ogrenciActiveTab=i;
+  renderOgrenciTabs();
+  const sec=document.getElementById('ogrenciSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openOgrenci(from){
+  ogrenciCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeNazar();closeOlumsuz();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  ogrenciActiveTab=0;
+  renderOgrenciTabs();
+  renderOgrenciContent();
+  const p=document.getElementById('ogrenciPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeOgrenci(){
+  const p=document.getElementById('ogrenciPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function ogrenciBack(){
+  closeOgrenci();
+  if(ogrenciCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== KİLO VERME =====
+const kiloTabs_=["Öz Değer","Duygusal Açlık","Metabolik Denge","Hareketle Barışma"];
+const kiloOzDeger=[
+  {dur:"12 dk",title:"Aynaya Sevgiyle Bak",author:"Defne",grad:"linear-gradient(135deg,#142a1c,#1e3e2c)"},
+  {dur:"15 dk",title:"Bedenine Teşekkür Et",author:"Elif",grad:"linear-gradient(135deg,#1a3424,#244830)"},
+  {dur:"10 dk",title:"Kendini Affetme Çalışması",author:"Yasemin",grad:"linear-gradient(135deg,#142a1c,#1e3e2c)"}
+];
+const kiloDuygusal=[
+  {dur:"14 dk",title:"Duygusal Açlığı Tanı",author:"Cem",grad:"linear-gradient(135deg,#1a3424,#244830)"},
+  {dur:"18 dk",title:"Yemeden Önce Dur",author:"Adem",grad:"linear-gradient(135deg,#142a1c,#1e3e2c)"},
+  {dur:"10 dk",title:"Gece Atakları İçin Kalkan",author:"Özge",grad:"linear-gradient(135deg,#1a3424,#244830)"}
+];
+const kiloMetabolik=[
+  {dur:"16 dk",title:"Metabolizmayı Uyandır",author:"Ali",grad:"linear-gradient(135deg,#142a1c,#1e3e2c)"},
+  {dur:"20 dk",title:"Bilinçli Beslenme Rehberi",author:"Peker",grad:"linear-gradient(135deg,#1a3424,#244830)"},
+  {dur:"12 dk",title:"Sindirim Sistemi Dengesi",author:"Yusuf",grad:"linear-gradient(135deg,#142a1c,#1e3e2c)"}
+];
+const kiloHareket=[
+  {dur:"15 dk",title:"Bedenini Keşfet",author:"Ersen",grad:"linear-gradient(135deg,#1a3424,#244830)"},
+  {dur:"10 dk",title:"Hareketle Barış",author:"Defne",grad:"linear-gradient(135deg,#142a1c,#1e3e2c)"},
+  {dur:"18 dk",title:"Doğayla Yürüyüş",author:"Elif",grad:"linear-gradient(135deg,#1a3424,#244830)"}
+];
+const kiloAllContent=[kiloOzDeger,kiloDuygusal,kiloMetabolik,kiloHareket];
+let kiloActiveTab=0;
+let kiloCameFrom=null;
+
+function kiloScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="95" r="45" fill="rgba(108,192,112,.04)" stroke="rgba(108,192,112,.1)" stroke-width="1.5"/>
+      <path d="M95,95 Q110,70 125,95" fill="none" stroke="rgba(108,192,112,.12)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="110" y1="95" x2="110" y2="130" stroke="rgba(108,192,112,.1)" stroke-width="1.5"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70,130 Q90,50 110,90 Q130,130 150,70" fill="none" stroke="rgba(128,216,136,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="110" cy="90" r="10" fill="rgba(108,192,112,.06)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="38" fill="rgba(144,232,152,.03)"/>
+      <circle cx="110" cy="90" r="20" fill="rgba(144,232,152,.05)"/>
+      <path d="M85,110 Q110,80 135,110" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M80,120 L100,80 L120,110 L140,70 L160,100" fill="none" stroke="rgba(108,192,112,.1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="100" cy="80" r="4" fill="rgba(108,192,112,.08)"/>
+      <circle cx="140" cy="70" r="4" fill="rgba(108,192,112,.08)"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderKiloTabs(){
+  document.getElementById('kiloTabs').innerHTML=kiloTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===kiloActiveTab?'on':''}" onclick="switchKiloTab(${i})">${t}</div>`
+  ).join('');
+}
+function renderKiloSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="kiloSec${idx}">${title}<span class="uyku-sec-right" onclick="switchKiloTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${kiloScene(i)}</div>
+        <div class="uyku-card-bottom">
+          <div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>
+          <div class="uyku-card-name">${item.title}</div>
+          <div class="uyku-card-author">${item.author}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+function renderKiloContent(){
+  let h='';
+  kiloTabs_.forEach((tab,i)=>{
+    h+=renderKiloSection(kiloAllContent[i],tab,i);
+  });
+  document.getElementById('kiloScroll').innerHTML=h;
+}
+function switchKiloTab(i){
+  kiloActiveTab=i;
+  renderKiloTabs();
+  const sec=document.getElementById('kiloSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openKilo(from){
+  kiloCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  kiloActiveTab=0;
+  renderKiloTabs();
+  renderKiloContent();
+  const p=document.getElementById('kiloPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeKilo(){
+  const p=document.getElementById('kiloPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function kiloBack(){
+  closeKilo();
+  if(kiloCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+// ===== NAZAR / KÖTÜ ENERJİ =====
+const nazarItems=[
+  {dur:"20 dk",title:"Nazar ve Kötü Enerjiden Arınma",desc:"Üzerindeki olumsuz etkileri temizle",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(93,173,226,.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2" fill="rgba(93,173,226,.4)"/></svg>`},
+  {dur:"15 dk",title:"Enerji Kalkanı Oluşturma",desc:"Negatif enerjilere karşı koruma alanı kur",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(93,173,226,.6)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></svg>`},
+  {dur:"18 dk",title:"Frekans Yükseltme Çalışması",desc:"Titreşimini yükselterek olumsuzluktan sıyrıl",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(93,173,226,.6)" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h2l3-8 4 16 3-8h4"/></svg>`},
+  {dur:"12 dk",title:"Çevresel Arınma",desc:"Yaşam alanındaki negatif enerjiyi temizle",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="rgba(93,173,226,.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 008 0"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>`}
+];
+let nazarCameFrom=null;
+
+function renderNazarContent(){
+  let h='<div class="nazar-grid">';
+  nazarItems.forEach(item=>{
+    h+=`<div class="nazar-card-item" onclick="onContentTap('${item.title}',false)">
+      <div class="nazar-card-icon">${item.icon}</div>
+      <div class="nazar-card-info">
+        <div class="nazar-card-title">${item.title}</div>
+        <div class="nazar-card-desc">${item.desc}</div>
+      </div>
+      <div class="nazar-card-dur">${item.dur}</div>
+    </div>`;
+  });
+  h+='</div>';
+  document.getElementById('nazarScroll').innerHTML=h;
+}
+function openNazar(from){
+  nazarCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeBagim();closeKilo();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  renderNazarContent();
+  const p=document.getElementById('nazarPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeNazar(){
+  const p=document.getElementById('nazarPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function nazarBack(){
+  closeNazar();
+  if(nazarCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+const bagimTabs_=["Sigarayı Bırak","Yeme Alışkanlıkları","Döngüden Çıkış","Kriz Yönetimi"];
+const bagimSigara=[
+  {dur:"",title:"Özel Sigara Bırakma Programı",author:"",grad:"linear-gradient(135deg,#2a1810,#3a2818)"},
+  {dur:"15 dk",title:"Zihinsel Kararlılık - Derin Çalışma 1",author:"Ersen",grad:"linear-gradient(135deg,#2e1c12,#3e2c1a)"},
+  {dur:"15 dk",title:"Bağ Koparma - Derin Çalışma 2",author:"Defne",grad:"linear-gradient(135deg,#2a1810,#3a2818)"},
+  {dur:"10 dk",title:"Yeni Bir Sen - Derin Çalışma 3",author:"Adem",grad:"linear-gradient(135deg,#301e14,#402e1c)"},
+  {dur:"20 dk",title:"Uyurken Bırak",author:"Peker",grad:"linear-gradient(135deg,#2c1a12,#3c2a1a)"},
+  {dur:"5 dk",title:"Duman İsteği Bastırdığında",author:"Adem",grad:"linear-gradient(135deg,#281610,#382618)"}
+];
+const bagimYeme=[
+  {dur:"12 dk",title:"Duygusal Açlığı Tanı",author:"Yasemin",grad:"linear-gradient(135deg,#2a1810,#3a2818)"},
+  {dur:"15 dk",title:"Yeme Dürtüsüne Dur De",author:"Elif",grad:"linear-gradient(135deg,#2e1c12,#3e2c1a)"},
+  {dur:"18 dk",title:"Bilinçli Beslenme",author:"Cem",grad:"linear-gradient(135deg,#2c1a12,#3c2a1a)"}
+];
+const bagimDongu=[
+  {dur:"14 dk",title:"Alışkanlık Döngüsünü Kır",author:"Peker",grad:"linear-gradient(135deg,#2a1810,#3a2818)"},
+  {dur:"16 dk",title:"Tetikleyicilerini Tanı",author:"Ali",grad:"linear-gradient(135deg,#301e14,#402e1c)"},
+  {dur:"20 dk",title:"Yeni Alışkanlık İnşası",author:"Defne",grad:"linear-gradient(135deg,#2e1c12,#3e2c1a)"},
+  {dur:"12 dk",title:"Ekran Bağımlılığından Kurtul",author:"Ersen",grad:"linear-gradient(135deg,#2c1a12,#3c2a1a)"}
+];
+const bagimKriz=[
+  {dur:"5 dk",title:"Duman İsteği Bastırdığında",author:"Adem",grad:"linear-gradient(135deg,#281610,#382618)"},
+  {dur:"10 dk",title:"Yeme Krizine Mesafe",author:"Yusuf",grad:"linear-gradient(135deg,#2a1810,#3a2818)"},
+  {dur:"7 dk",title:"Şimdi Dur",author:"Özge",grad:"linear-gradient(135deg,#2e1c12,#3e2c1a)"}
+];
+const bagimAllContent=[bagimSigara,bagimYeme,bagimDongu,bagimKriz];
+let bagimActiveTab=0;
+let bagimCameFrom=null;
+
+function bagimScene(idx){
+  const scenes=[
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="100" r="50" fill="rgba(208,128,80,.04)" stroke="rgba(208,128,80,.1)" stroke-width="1.5"/>
+      <path d="M90,100 L130,100" stroke="rgba(208,128,80,.15)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M110,80 L110,120" stroke="rgba(208,128,80,.15)" stroke-width="2" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60,140 Q90,60 110,100 Q130,140 160,60" fill="none" stroke="rgba(192,112,64,.1)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="110" cy="100" r="8" fill="rgba(208,128,80,.08)"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="110" cy="90" r="40" fill="rgba(224,144,96,.04)"/>
+      <circle cx="110" cy="90" r="22" fill="rgba(224,144,96,.06)"/>
+      <path d="M95,105 Q110,85 125,105" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    `<svg viewBox="0 0 220 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="75" y="55" width="70" height="90" rx="6" fill="rgba(208,128,80,.04)" stroke="rgba(208,128,80,.08)" stroke-width="1"/>
+      <path d="M90,80 L130,80 M90,100 L120,100" stroke="rgba(208,128,80,.1)" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="110" cy="130" r="3" fill="rgba(208,128,80,.1)"/>
+    </svg>`
+  ];
+  return scenes[idx % scenes.length];
+}
+
+function renderBagimTabs(){
+  document.getElementById('bagimTabs').innerHTML=bagimTabs_.map((t,i)=>
+    `<div class="uyku-tab ${i===bagimActiveTab?'on':''}" onclick="switchBagimTab(${i})">${t}</div>`
+  ).join('');
+}
+
+function renderBagimSection(data,title,idx){
+  let h=`<div class="uyku-sec-title" id="bagimSec${idx}">${title}<span class="uyku-sec-right" onclick="switchBagimTab(${idx})">Tümünü gör</span></div>`;
+  h+='<div class="uyku-cards">';
+  data.forEach((item,i)=>{
+    h+=`<div class="uyku-card" onclick="onContentTap('${item.title}',false)">
+      <div class="uyku-card-vis">
+        <div class="uyku-card-scene" style="background:${item.grad}">${bagimScene(i)}</div>
+        <div class="uyku-card-bottom">
+          ${item.dur?`<div class="uyku-card-dur"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.dur}</div>`:''}
+          <div class="uyku-card-name">${item.title}</div>
+          ${item.author?`<div class="uyku-card-author">${item.author}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderBagimContent(){
+  let h='';
+  bagimTabs_.forEach((tab,i)=>{
+    h+=renderBagimSection(bagimAllContent[i],tab,i);
+  });
+  document.getElementById('bagimScroll').innerHTML=h;
+}
+
+function switchBagimTab(i){
+  bagimActiveTab=i;
+  renderBagimTabs();
+  const sec=document.getElementById('bagimSec'+i);
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openBagim(from){
+  bagimCameFrom=from||null;
+  closeSOS();closeSearch();closeUyku();closeStres();closeIliski();closeBolluk();closeEbeveyn();closeKilo();closeNazar();closeOlumsuz();closeOgrenci();closeOzsaygi();closeSaglik();closeYas();closeEvcil();
+  bagimActiveTab=0;
+  renderBagimTabs();
+  renderBagimContent();
+  const p=document.getElementById('bagimPage');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeBagim(){
+  const p=document.getElementById('bagimPage');
+  p.classList.remove('show');
+  setTimeout(()=>p.style.display='none',300);
+}
+function bagimBack(){
+  closeBagim();
+  if(bagimCameFrom==='search'){openSearch();}
+  else{setNav('navHome');}
+}
+
+let cq=0;
+
+// Kategori tıklama yönlendirme (yeni sayfalar eklendikçe buraya ekleyin)
+const catActions={uyku:'openUyku()',stres:'openStres()',iliski:'openIliski()',bolluk:'openBolluk()',ebeveyn:'openEbeveyn()',bagim:'openBagim()',kilo:'openKilo()',ogrenci:'openOgrenci()'};
+function catClick(key,name){
+  if(catActions[key]) eval(catActions[key]);
+  else alert(name);
+}
+
+function renderCats(){
+  const el=document.getElementById('cats'),de=document.getElementById('dots');
+  const pp=6,pg=Math.ceil(cats.length/pp);
+  let h='';
+  for(let p=0;p<pg;p++){
+    const s=p*pp,pi=cats.slice(s,s+pp);
+    h+='<div class="cat-page">';
+    if(pi.length===2){
+      h+=`<div class="cat-card" onclick="catClick('${pi[0].k}','${pi[0].n}')"><div class="cat-icon">${ICONS[pi[0].k]}</div><div class="cat-name">${pi[0].n}</div></div>`;
+      h+='<div class="cat-card" style="opacity:0;pointer-events:none"></div>';
+      h+='<div class="cat-card" style="opacity:0;pointer-events:none"></div>';
+      h+=`<div class="cat-card" onclick="catClick('${pi[1].k}','${pi[1].n}')"><div class="cat-icon">${ICONS[pi[1].k]}</div><div class="cat-name">${pi[1].n}</div></div>`;
+      h+='<div class="cat-card" style="opacity:0;pointer-events:none"></div>';
+      h+='<div class="cat-card" style="opacity:0;pointer-events:none"></div>';
+    } else {
+      pi.forEach(c=>{h+=`<div class="cat-card" onclick="catClick('${c.k}','${c.n}')"><div class="cat-icon">${ICONS[c.k]}</div><div class="cat-name">${c.n}</div></div>`;});
+      for(let i=pi.length;i<pp;i++)h+='<div class="cat-card" style="opacity:0;pointer-events:none"></div>';
+    }
+    h+='</div>';
+  }
+  el.innerHTML=h;
+  let dh='';for(let p=0;p<pg;p++)dh+=`<div class="dot ${p===0?'on':''}" data-p="${p}"></div>`;
+  de.innerHTML=dh;
+  el.addEventListener('scroll',()=>{
+    const w=el.querySelector('.cat-page').offsetWidth+12,a=Math.round(el.scrollLeft/w);
+    de.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===a));
+  });
+}
+function renderNew(){
+  document.getElementById('news').innerHTML=newI.map(i=>`<div class="new-card" onclick="onContentTap('${i.t}',false)"><div class="new-img ${i.bg}">${i.e}<div class="new-badge">${i.b}</div></div><div class="new-info"><div class="new-title">${i.t}</div><div class="new-meta">${i.m}</div></div></div>`).join('');
+}
+function renderRec(){
+  document.getElementById('recs').innerHTML=recs.map(r=>`<div class="reco-card" onclick="onContentTap('${r.t}',false)"><div class="reco-img ${r.bg}">${r.e}</div><div class="reco-info"><div class="reco-t">${r.t}</div><div class="reco-m">${r.m}</div></div></div>`).join('');
+}
+function renderFree(){
+  const sec = document.getElementById('secFree');
+  const el = document.getElementById('freeCards');
+  // Premium kullanıcı → ücretsiz bölümünü gizle
+  if(isUserPremium()) { sec.style.display='none'; el.innerHTML=''; return; }
+  sec.style.display='flex';
+  el.innerHTML=freeI.map(i=>`<div class="new-card" onclick="onContentTap('${i.t}',true)"><div class="new-img ${i.bg}" style="position:relative">${i.e}<div class="free-badge">ÜCRETSİZ</div></div><div class="new-info"><div class="new-title">${i.t}</div><div class="new-meta">${i.m}</div></div></div>`).join('');
+}
+
+// Scroll ok tıklama: bölümü kaydır
+function scrollSection(id,amount){
+  const el=document.getElementById(id);
+  if(id==='cats'){
+    // Kategori sayfası: bir sonraki sayfaya geç
+    const w=el.querySelector('.cat-page').offsetWidth+12;
+    el.scrollBy({left:w,behavior:'smooth'});
+  } else {
+    el.scrollBy({left:amount,behavior:'smooth'});
+  }
+}
+
+function openQ(){cq=0;const o=document.getElementById('quiz');o.style.display='flex';requestAnimationFrame(()=>o.classList.add('show'));showQ();}
+function closeQ(){const o=document.getElementById('quiz');o.classList.remove('show');setTimeout(()=>o.style.display='none',300);}
+function showQ(){const q=qz[cq];document.getElementById('qQ').textContent=q.q;document.getElementById('qBar').style.width=((cq+1)/qz.length*100)+'%';document.getElementById('qO').innerHTML=q.o.map((o,i)=>`<button class="quiz-o" onclick="ansQ(${i})">${o}</button>`).join('');}
+function ansQ(i){document.querySelectorAll('.quiz-o')[i].classList.add('sel');setTimeout(()=>{cq++;if(cq<qz.length)showQ();else{alert('Anket tamamlandı!');closeQ();}},400);}
+
+// Scroll ok kontrolü
+function checkScrollArrows(){
+  document.getElementById('secCats').classList.add('scrollable');
+  const ns=document.getElementById('news');
+  if(ns.scrollWidth>ns.clientWidth+10) document.getElementById('secNew').classList.add('scrollable');
+  else document.getElementById('secNew').classList.remove('scrollable');
+  const rs=document.getElementById('recs');
+  if(rs.scrollWidth>rs.clientWidth+10) document.getElementById('secRec').classList.add('scrollable');
+  else document.getElementById('secRec').classList.remove('scrollable');
+}
+
+// ===== AUTH & PAYWALL LOGIC =====
+let authMode = 'register';
+const FREE_PLAY_LIMIT = 5; // anasayfadaki ücretsiz içerik sayısı
+const FREE_DAYS = 3;       // kaç gün ücretsiz erişim
+
+function getLocalData(key) {
+  try { return JSON.parse(localStorage.getItem('gong_' + key)); } catch(e) { return null; }
+}
+function setLocalData(key, val) {
+  try { localStorage.setItem('gong_' + key, JSON.stringify(val)); } catch(e) {}
+}
+
+// Kullanıcı premium mi?
+function isUserPremium() {
+  return !!getLocalData('premium');
+}
+
+// Ücretsiz süre doldu mu? (3 gün)
+function isFreeExpired() {
+  const start = getLocalData('freeStart');
+  if (!start) return false;
+  const daysSince = Math.floor((Date.now() - new Date(start).getTime()) / 86400000);
+  return daysSince >= FREE_DAYS;
+}
+
+// Ücretsiz dinleme hakkı kaldı mı?
+function getFreePlayCount() {
+  return getLocalData('freePlayCount') || 0;
+}
+
+// ===== İLK AÇILIŞ: PAYWALL =====
+function checkFirstLaunch() {
+  if (isUserPremium()) return; // Premium, hiç gösterme
+  const seen = getLocalData('seen');
+  if (!seen) {
+    showPaywall(); // İlk açılış → paywall
+  }
+}
+
+// ===== İÇERİK TIKLAMA KONTROLÜ =====
+// Anasayfadaki kartlar: "free" olarak işaretlenenler
+// Kategori sayfalarındaki kartlar: her zaman kilitli (premium değilse)
+function onContentTap(title, isFreeContent) {
+  // Premium kullanıcı → serbestçe aç
+  if (isUserPremium()) { openPlayer(title); return; }
+
+  // Ücretsiz süre dolduysa → nudge
+  if (isFreeExpired()) {
+    showNudge('Ücretsiz deneme süren sona erdi. Kaldığın yerden devam etmek için sınırsız erişimi aç.');
+    return;
+  }
+
+  // Kategori sayfasındaki içerik → kilitli
+  if (!isFreeContent) {
+    showAuthPaywall();
+    return;
+  }
+
+  // Anasayfadaki ücretsiz içerik → sayacı kontrol et
+  let count = getFreePlayCount();
+  if (count >= FREE_PLAY_LIMIT) {
+    showNudge('Ücretsiz içerik hakkın doldu. Tüm içeriklere erişmek için sınırsız erişimi aç.');
+    return;
+  }
+  count++;
+  setLocalData('freePlayCount', count);
+  renderFree();
+  openPlayer(title);
+}
+
+// ===== PLAYER EKRANI =====
+function openPlayer(title) {
+  const el = document.getElementById('playerPage');
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerProgress').style.width = '0%';
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+}
+function closePlayer() {
+  const el = document.getElementById('playerPage');
+  el.classList.remove('show');
+  setTimeout(() => el.style.display = 'none', 300);
+}
+// TEST: Sol üst ayarlar butonu — localStorage sıfırla + yeniden yükle
+function resetApp() {
+  ['seen','freeStart','freePlayCount','premium','user','trial'].forEach(k => localStorage.removeItem('gong_' + k));
+  location.reload();
+}
+
+let isPlaying = false;
+function togglePlay() {
+  isPlaying = !isPlaying;
+  const btn = document.getElementById('playerPlayBtn');
+  if (isPlaying) {
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40"><rect x="7" y="5" width="4" height="14" rx="1" fill="var(--gold)"/><rect x="13" y="5" width="4" height="14" rx="1" fill="var(--gold)"/></svg>';
+    document.querySelector('.player-hint').textContent = 'Oynatılıyor...';
+  } else {
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40"><polygon points="8,4 20,12 8,20" fill="var(--gold)"/></svg>';
+    document.querySelector('.player-hint').textContent = 'Duraklatıldı';
+  }
+}
+
+// ===== AUTH EKRANI =====
+function showAuth() {
+  document.getElementById('authPage').classList.add('show');
+  document.getElementById('authPage').style.display = 'flex';
+  loadLogo('authLogo');
+}
+function hideAuth() {
+  const p = document.getElementById('authPage');
+  p.classList.remove('show');
+  p.style.display = 'none';
+}
+
+// Auth + Paywall birlikte (kategori içeriğine tıklayınca)
+function showAuthPaywall() {
+  showAuth();
+}
+
+function toggleAuthMode() {
+  authMode = authMode === 'register' ? 'login' : 'register';
+  const nameEl = document.getElementById('authName');
+  const btnEl = document.getElementById('authBtn');
+  const switchEl = document.getElementById('authSwitch');
+  const subEl = document.getElementById('authSubtitle');
+  if (authMode === 'login') {
+    nameEl.style.display = 'none';
+    btnEl.textContent = 'Giriş Yap';
+    switchEl.innerHTML = 'Hesabın yok mu? <a onclick="toggleAuthMode()">Kayıt Ol</a>';
+    subEl.innerHTML = 'Tekrar hoşgeldin!<br>Hesabına giriş yap';
+  } else {
+    nameEl.style.display = '';
+    btnEl.textContent = 'Kayıt Ol';
+    switchEl.innerHTML = 'Zaten hesabın var mı? <a onclick="toggleAuthMode()">Giriş Yap</a>';
+    subEl.innerHTML = 'Huzurlu bir yaşam için<br>hesabını oluştur';
+  }
+  document.getElementById('authError').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  const name = document.getElementById('authName').value.trim();
+  const btn = document.getElementById('authBtn');
+
+  if (!email || !pass) return showAuthError('E-posta ve şifre gerekli.');
+  if (authMode === 'register' && pass.length < 6) return showAuthError('Şifre en az 6 karakter olmalı.');
+
+  btn.disabled = true;
+  btn.textContent = 'Bekle...';
+
+  if (!supabase) {
+    setLocalData('user', { email, name: name || email.split('@')[0] });
+    btn.disabled = false;
+    hideAuth();
+    showPaywall();
+    return;
+  }
+
+  try {
+    let result;
+    if (authMode === 'register') {
+      result = await supabase.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+    } else {
+      result = await supabase.auth.signInWithPassword({ email, password: pass });
+    }
+
+    if (result.error) {
+      let msg = result.error.message;
+      if (msg.includes('already registered')) msg = 'Bu e-posta zaten kayıtlı. Giriş yapmayı dene.';
+      if (msg.includes('Invalid login')) msg = 'E-posta veya şifre hatalı.';
+      showAuthError(msg);
+      btn.disabled = false;
+      btn.textContent = authMode === 'register' ? 'Kayıt Ol' : 'Giriş Yap';
+      return;
+    }
+
+    currentUser = result.data.user;
+    setLocalData('user', { email, name: name || email.split('@')[0], id: currentUser?.id });
+    hideAuth();
+    showPaywall(); // Auth sonrası → paywall
+  } catch(e) {
+    showAuthError('Bağlantı hatası. Tekrar dene.');
+    btn.disabled = false;
+    btn.textContent = authMode === 'register' ? 'Kayıt Ol' : 'Giriş Yap';
+  }
+}
+
+async function handleGoogleAuth() {
+  if (!supabase) { showAuthError('Bağlantı kurulamadı.'); return; }
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+  if (error) showAuthError(error.message);
+}
+
+async function handleAppleAuth() {
+  if (!supabase) { showAuthError('Bağlantı kurulamadı.'); return; }
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'apple' });
+  if (error) showAuthError(error.message);
+}
+
+// ===== PAYWALL =====
+let selectedPlan = 'yearly';
+
+function showPaywall() {
+  document.getElementById('paywallPage').classList.add('show');
+  document.getElementById('paywallPage').style.display = 'flex';
+}
+function hidePaywall() {
+  const p = document.getElementById('paywallPage');
+  p.classList.remove('show');
+  p.style.display = 'none';
+}
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.getElementById('planYearly').classList.toggle('selected', plan === 'yearly');
+  document.getElementById('planMonthly').classList.toggle('selected', plan === 'monthly');
+}
+
+function startTrial() {
+  // Gerçek ödeme entegrasyonu burada olacak (Google Play / App Store)
+  setLocalData('trial', { plan: selectedPlan, started: new Date().toISOString(), days: 7 });
+  setLocalData('premium', true);
+  setLocalData('seen', true);
+  hidePaywall();
+  hideAuth();
+  showTrialWelcome();
+  renderNew();
+  renderRec();
+  renderFree();
+}
+
+function showTrialWelcome() {
+  const el = document.getElementById('trialWelcome');
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+}
+function closeTrialWelcome() {
+  const el = document.getElementById('trialWelcome');
+  el.classList.remove('show');
+  setTimeout(() => el.style.display = 'none', 300);
+}
+
+function skipPaywall() {
+  setLocalData('seen', true);
+  setLocalData('freeStart', new Date().toISOString());
+  setLocalData('freePlayCount', 0);
+  hidePaywall();
+  hideAuth();
+  renderFree();
+  renderNew();
+  renderRec();
+}
+
+// ===== SOFT NUDGE =====
+function showNudge(msg) {
+  if (msg) document.getElementById('nudgeText').textContent = msg;
+  document.getElementById('nudgeOverlay').classList.add('show');
+  document.getElementById('nudgeOverlay').style.display = 'flex';
+}
+function closeNudge() {
+  document.getElementById('nudgeOverlay').classList.remove('show');
+  document.getElementById('nudgeOverlay').style.display = 'none';
+}
+function nudgeToPaywall() {
+  closeNudge();
+  showAuthPaywall();
+}
+
+window.addEventListener('load',()=>{
+  // Supabase'i arka planda yükle (uygulamayı bloklamaz)
+  loadSupabase().then(() => {
+    fetchAppData().catch(()=>{});
+    checkAuth().catch(()=>{});
+  });
+  // Render hemen başlasın (hardcoded veri ile)
+  renderCats();renderNew();renderRec();renderFree();
+  setTimeout(()=>{checkScrollArrows();},100);
+  // Paywall'u splash arkasında hazırla (ana sayfa görünmesin)
+  checkFirstLaunch();
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(()=>{
+      document.getElementById('splash').style.display='none';
+    },1000);
+  },1800);
+});
+</script>
+</body>
+</html>
